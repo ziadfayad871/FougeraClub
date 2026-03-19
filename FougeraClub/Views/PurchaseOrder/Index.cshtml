@@ -1,0 +1,474 @@
+﻿@model IEnumerable<FougeraClub.Application.DTOs.PurchaseOrderDto>
+@using FougeraClub.Application.DTOs
+
+@{
+    ViewData["Title"] = "إدارة أوامر الشراء";
+    var suppliers = ViewBag.Suppliers as IEnumerable<SupplierLookupDto> ?? Enumerable.Empty<SupplierLookupDto>();
+}
+
+<div class="container-fluid rtl-container mt-3" id="purchaseOrdersPage">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0 print-hide">
+                        <li class="breadcrumb-item"><a href="/Admin/Home/Index">نادي فوجيرا</a></li>
+                        <li class="breadcrumb-item active">إدارة أوامر الشراء</li>
+                    </ol>
+                </div>
+                <div class="d-flex justify-content-end gap-2 mb-2 print-hide report-toolbar">
+                    <button type="button" class="btn btn-success btn-report-action" data-bs-toggle="modal" data-bs-target="#printOrderModal" data-print-all="true">
+                        <i class="ri-printer-line me-1"></i> طباعة
+                    </button>
+                    <button type="button" class="btn btn-success btn-report-action" id="exportReportBtn">
+                        <i class="ri-file-excel-2-line me-1"></i> عرض تقرير
+                    </button>
+                </div>
+                <h4 class="page-title">إدارة أوامر الشراء</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-2 print-hide">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-end mb-3">
+                        <button type="button" class="btn btn-success btn-rounded mb-0" data-bs-toggle="modal" data-bs-target="#addOrderModal">
+                            <i class="ri-add-circle-fill me-1"></i> إضافة أمر شراء
+                        </button>
+                    </div>
+
+                    <form method="get" onsubmit="return validateDates()" class="row g-2 align-items-end filter-form">
+                        <div class="col-xl-4 col-lg-4 col-md-6 filter-col filter-col-supplier">
+                            <label class="form-label fw-bold">اسم المورد</label>
+                            <select name="supplierName" class="form-select">
+                                <option value="">اسم المورد</option>
+                                @foreach (var supplier in suppliers)
+                                {
+                                    if (string.Equals((string?)ViewBag.SupplierName, supplier.Name, StringComparison.Ordinal))
+                                    {
+                                        <option value="@supplier.Name" selected>@supplier.Name</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@supplier.Name">@supplier.Name</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6 filter-col filter-col-date">
+                            <label class="form-label fw-bold">من</label>
+                            <input type="date" name="fromDate" value="@ViewBag.FromDate" class="form-control">
+                        </div>
+
+                        <div class="col-xl-2 col-lg-3 col-md-6 filter-col filter-col-date">
+                            <label class="form-label fw-bold">إلى</label>
+                            <input type="date" name="toDate" value="@ViewBag.ToDate" class="form-control">
+                        </div>
+
+                        <div class="col-xl-2 col-lg-1 col-md-6 col-6 filter-col filter-col-action">
+                            <button type="submit" class="btn btn-success w-100 btn-filter-action">
+                                <i class="ri-filter-3-line"></i> بحث
+                            </button>
+                        </div>
+
+                        <div class="col-xl-2 col-lg-1 col-md-6 col-6 filter-col filter-col-action">
+                            <button type="button" class="btn btn-filter-clear w-100 btn-filter-action" id="clearFiltersBtn">
+                                <i class="ri-close-line"></i> مسح
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-centered table-hover mb-0 po-table-rtl" id="ordersTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="text-center po-col-number">رقم أمر الشراء</th>
+                                    <th class="text-center po-col-supplier">اسم المورد</th>
+                                    <th class="text-center po-col-date">التاريخ</th>
+                                    <th class="text-center po-col-actions print-hide">أدوات التحكم</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!Model.Any())
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4 text-muted">لا توجد سجلات حالياً</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr class="po-row" data-row-id="@item.Id">
+                                            <td class="text-center fw-bold text-primary">@item.OrderNumber</td>
+                                            <td class="text-center">@item.SupplierName</td>
+                                            <td class="text-center">@item.OrderDate.ToString("dd-MM-yyyy")</td>
+                                            <td class="print-hide">
+                                                <div class="d-flex justify-content-center gap-1 action-controls">
+                                                    <button type="button" class="btn btn-sm btn-soft-success js-open-add" title="إضافة">
+                                                        <i class="ri-add-line"></i>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-soft-primary js-open-edit"
+                                                        title="تعديل"
+                                                        data-id="@item.Id"
+                                                        data-order-number="@item.OrderNumber">
+                                                        <i class="ri-edit-2-line"></i>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-soft-danger js-open-delete"
+                                                        title="حذف"
+                                                        data-id="@item.Id"
+                                                        data-order-number="@item.OrderNumber">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        class="btn btn-sm btn-soft-print js-open-print"
+                                                        title="طباعة"
+                                                        data-id="@item.Id"
+                                                        data-order-number="@item.OrderNumber"
+                                                        data-supplier="@item.SupplierName"
+                                                        data-date="@item.OrderDate.ToString("dd-MM-yyyy")">
+                                                        <i class="ri-printer-line"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="purchase-pagination-wrap print-hide">
+                        <nav aria-label="Table pagination">
+                            <ul class="pagination justify-content-center mb-0" id="ordersPagination"></ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">إضافة أمر شراء</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                هل تريد فتح نموذج إضافة أمر شراء جديد؟
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                <a href="/Admin/PurchaseOrder/AddEdit" class="btn btn-success">فتح نموذج الإضافة</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تعديل أمر شراء</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="editOrderModalText"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                <a id="editOrderConfirmBtn" href="#" class="btn btn-primary">فتح التعديل</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">حذف أمر شراء</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="deleteOrderModalText"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                <form method="post" asp-action="Delete" id="deleteOrderForm" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="deleteOrderId" />
+                    <input type="hidden" name="supplierName" value="@ViewBag.SupplierName" />
+                    <input type="hidden" name="fromDate" value="@ViewBag.FromDate" />
+                    <input type="hidden" name="toDate" value="@ViewBag.ToDate" />
+                    <button type="submit" class="btn btn-danger">تأكيد الحذف</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Print Modal -->
+<div class="modal fade" id="printOrderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">طباعة أمر شراء</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="printOrderModalText"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-secondary" id="printOrderConfirmBtn">طباعة الآن</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .rtl-container {
+        direction: rtl;
+        text-align: right;
+        max-width: calc(100% - 24px);
+        margin-inline: auto;
+        padding-inline: 0;
+    }
+
+    .page-title-box {
+        padding: 20px 0;
+    }
+
+    #purchaseOrdersPage .card {
+        border-radius: 10px;
+    }
+
+    #purchaseOrdersPage .card-body.p-0 {
+        padding: 0 !important;
+    }
+
+    .report-toolbar {
+        flex-wrap: wrap;
+    }
+
+    .btn-soft-success {
+        background-color: rgba(10, 207, 151, 0.12);
+        color: #0acf97;
+    }
+
+    .btn-soft-primary {
+        background-color: rgba(114, 124, 245, 0.1);
+        color: #727cf5;
+    }
+
+    .btn-soft-danger {
+        background-color: rgba(250, 92, 124, 0.1);
+        color: #fa5c7c;
+    }
+
+    .btn-soft-secondary {
+        background-color: rgba(108, 117, 125, 0.12);
+        color: #6c757d;
+    }
+
+    .btn-soft-print {
+        background: rgba(63, 168, 71, 0.16);
+        color: #2e7d32;
+        border: 1px solid rgba(63, 168, 71, 0.35);
+    }
+
+    .btn-soft-print:hover {
+        background: #3fa847;
+        color: #fff;
+        border-color: #3fa847;
+    }
+
+    .btn-rounded {
+        border-radius: 30px;
+    }
+
+    .report-toolbar .btn-report-action {
+        min-width: 200px;
+        height: 44px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        gap: 6px;
+        font-size: 15px;
+        border: 0;
+        background-color: #3fa847;
+    }
+
+    .report-toolbar .btn-report-action:hover {
+        background-color: #35953d;
+    }
+
+    .btn-filter-action {
+        height: 46px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 15px;
+        border: 0;
+    }
+
+    .btn-filter-clear {
+        background-color: #8fd16a;
+        color: #fff;
+    }
+
+    .btn-filter-clear:hover {
+        background-color: #7ac058;
+        color: #fff;
+    }
+
+    .filter-form .filter-col label {
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .filter-form .filter-col .form-control,
+    .filter-form .filter-col .form-select,
+    .filter-form .filter-col .btn-filter-action {
+        width: 100%;
+    }
+
+    @@media (min-width: 1200px) {
+        .filter-form {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 10px;
+        }
+
+        .filter-form .filter-col {
+            float: none;
+            padding-inline: 0;
+        }
+
+        .filter-form .filter-col-supplier {
+            flex: 2.3 1 0;
+            min-width: 320px;
+        }
+
+        .filter-form .filter-col-date {
+            flex: 1.45 1 0;
+            min-width: 230px;
+        }
+
+        .filter-form .filter-col-action {
+            flex: 0 0 140px;
+            min-width: 140px;
+        }
+    }
+
+    .po-table-rtl {
+        direction: rtl;
+    }
+
+    .po-table-rtl th,
+    .po-table-rtl td {
+        vertical-align: middle;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        white-space: nowrap;
+    }
+
+    @@media (max-width: 992px) {
+        .report-toolbar .btn-report-action {
+            min-width: 160px;
+            height: 42px;
+        }
+    }
+
+    .po-col-number {
+        width: 14%;
+        min-width: 130px;
+    }
+
+    .po-col-supplier {
+        width: 46%;
+        min-width: 320px;
+    }
+
+    .po-col-date {
+        width: 20%;
+        min-width: 150px;
+    }
+
+    .po-col-actions {
+        width: 20%;
+        min-width: 210px;
+    }
+
+    .purchase-pagination-wrap {
+        padding: 14px 16px 18px;
+        border-top: 1px solid #edf0f2;
+        background: #fff;
+    }
+
+    #ordersPagination .page-link {
+        color: #4c5560;
+        border-color: #dfe5ea;
+        min-width: 38px;
+        text-align: center;
+    }
+
+    #ordersPagination .page-item.active .page-link {
+        background-color: #3fa847;
+        border-color: #3fa847;
+        color: #fff;
+    }
+
+    #ordersPagination .page-item.disabled .page-link {
+        color: #a8b0b8;
+    }
+
+    @@media print {
+        .print-hide,
+        .action-controls,
+        .modal,
+        .side-nav,
+        .custom-navbar,
+        .breadcrumb,
+        .btn,
+        form {
+            display: none !important;
+        }
+
+        .po-print-hidden {
+            display: none !important;
+        }
+
+        .card {
+            border: none;
+            box-shadow: none;
+        }
+
+        .table {
+            width: 100% !important;
+            border: 1px solid #ddd;
+        }
+    }
+</style>
+
+<script src="~/js/purchase-order-index.js" asp-append-version="true"></script>

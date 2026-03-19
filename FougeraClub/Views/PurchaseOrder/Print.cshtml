@@ -1,0 +1,674 @@
+﻿@model FougeraClub.Application.DTOs.PurchaseOrderDto
+@{
+    Layout = null;
+    var subTotal = Model.Items.Sum(i => i.Quantity * i.UnitPrice);
+    var vat = Model.ApplyVat ? Math.Round(subTotal * 0.05m, 2) : 0m;
+    var managerApprovedName = (ViewBag.ManagerApprovedName as string ?? string.Empty).Trim();
+    var managerSignatureName = string.IsNullOrWhiteSpace(managerApprovedName) ? string.Empty : managerApprovedName;
+}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>طباعة أمر شراء - @Model.OrderNumber</title>
+    <style>
+        :root {
+            --site-primary: #3fa847;
+            --site-primary-dark: #2f8d38;
+            --site-border: #d8dee6;
+            --site-header-bg: #f1f5f9;
+            --site-text: #1f2d3d;
+            --site-muted: #667085;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #eef2f6;
+            color: var(--site-text);
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        }
+
+        .print-sheet {
+            width: min(1080px, calc(100% - 24px));
+            margin: 20px auto;
+            background: #fff;
+            border: 1px solid var(--site-border);
+            border-radius: 10px;
+            padding: 18px 20px 22px;
+        }
+
+        .top-head {
+            display: grid;
+            grid-template-columns: 140px 1fr 150px;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--site-border);
+            padding: 10px 12px;
+            margin-bottom: 10px;
+        }
+
+        .logo-box {
+            height: 72px;
+            border: 1px solid var(--site-border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--site-muted);
+            font-size: 13px;
+            font-weight: 600;
+            background: #f8fafc;
+        }
+
+        .head-title {
+            text-align: center;
+            line-height: 1.7;
+        }
+
+        .head-title h1 {
+            margin: 0;
+            font-size: 22px;
+            color: #bf4f2f;
+            font-weight: 800;
+        }
+
+        .head-title p {
+            margin: 0;
+            color: var(--site-primary);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .order-type {
+            border: 1px solid var(--site-border);
+            background: var(--site-header-bg);
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .doc-title {
+            text-align: center;
+            margin: 8px 0 14px;
+        }
+
+        .doc-title .ar {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            color: #23303f;
+        }
+
+        .doc-title .en {
+            margin: 2px 0 0;
+            color: var(--site-muted);
+            font-weight: 600;
+        }
+
+        .doc-title .no {
+            margin: 5px 0 0;
+            color: #d93025;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .meta-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .meta-box {
+            display: grid;
+            grid-template-columns: 70px 1fr;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px dashed #b8c2cc;
+            padding-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .meta-box label {
+            color: #4f5f70;
+            font-weight: 700;
+        }
+
+        .meta-box .value {
+            font-weight: 700;
+        }
+
+        .notes-title {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin: 12px 0 6px;
+            color: #394b5d;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .items-table th,
+        .items-table td {
+            border: 1px solid var(--site-border);
+            padding: 8px 7px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .items-table th {
+            background: #edf2f7;
+            color: #2c3f52;
+            font-weight: 800;
+        }
+
+        .items-table .left {
+            text-align: right;
+        }
+
+        .items-table .en {
+            display: block;
+            color: var(--site-muted);
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .totals-wrap {
+            width: 360px;
+            margin-right: auto;
+            margin-top: 10px;
+        }
+
+        .totals-wrap td {
+            border: 1px solid var(--site-border);
+            padding: 7px 8px;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        .totals-wrap td:first-child {
+            font-weight: 700;
+            color: #2e3f52;
+        }
+
+        .totals-wrap td:last-child {
+            text-align: left;
+            font-weight: 800;
+        }
+
+        .totals-wrap .grand td {
+            background: rgba(63, 168, 71, 0.12);
+            color: #245f29;
+            font-size: 15px;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 26px;
+            gap: 14px;
+        }
+
+        .footer-note {
+            color: #425465;
+            font-size: 14px;
+        }
+
+        .manager-sign {
+            min-width: 230px;
+            border-top: 1px dashed #7f8b99;
+            text-align: center;
+            padding-top: 8px;
+            font-weight: 700;
+            color: #2b3d4d;
+        }
+
+        .manager-sign-title {
+            display: block;
+            text-decoration: none;
+        }
+
+        .manager-sign-value {
+            display: block;
+            margin-top: 6px;
+            min-height: 20px;
+            color: #2f8d38;
+            text-decoration: none;
+        }
+
+        .manager-sign-title.can-sign {
+            cursor: pointer;
+        }
+
+        .otp-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.35);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+        }
+
+        .otp-modal-backdrop.show {
+            display: flex;
+        }
+
+        .otp-modal-card {
+            width: min(420px, 100%);
+            background: #fff;
+            border-radius: 10px;
+            border: 1px solid #d8dee6;
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18);
+            padding: 16px;
+        }
+
+        .otp-modal-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-weight: 800;
+            color: #2b3d4d;
+        }
+
+        .otp-close {
+            border: 0;
+            background: transparent;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            color: #64748b;
+        }
+
+        .otp-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .otp-input {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .otp-input:focus {
+            border-color: var(--site-primary);
+            box-shadow: 0 0 0 3px rgba(63, 168, 71, 0.15);
+        }
+
+        .otp-hint {
+            margin-top: 8px;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+        .otp-error {
+            margin-top: 8px;
+            color: #b91c1c;
+            font-size: 13px;
+            min-height: 18px;
+        }
+
+        .otp-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .otp-btn {
+            border: 0;
+            border-radius: 7px;
+            padding: 8px 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .otp-btn.cancel {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .otp-btn.confirm {
+            background: var(--site-primary);
+            color: #fff;
+        }
+
+        .print-actions {
+            width: min(1080px, calc(100% - 24px));
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+
+        .btn {
+            border: 0;
+            border-radius: 7px;
+            padding: 10px 22px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        .btn-print {
+            background: var(--site-primary);
+            color: #fff;
+        }
+
+        .btn-print:hover {
+            background: var(--site-primary-dark);
+        }
+
+        .btn-close {
+            background: #dfe7ef;
+            color: #2e3f52;
+        }
+
+        @@media (max-width: 860px) {
+            .top-head {
+                grid-template-columns: 1fr;
+            }
+
+            .meta-row {
+                grid-template-columns: 1fr;
+            }
+
+            .totals-wrap {
+                width: 100%;
+            }
+
+            .footer {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .manager-sign {
+                min-width: 100%;
+            }
+        }
+
+        @@media print {
+            body {
+                background: #fff;
+            }
+
+            .print-sheet {
+                width: 100%;
+                margin: 0;
+                border: 0;
+                border-radius: 0;
+                padding: 6mm;
+            }
+
+            .print-actions,
+            .otp-modal-backdrop {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-sheet">
+        <div class="top-head">
+            <div class="logo-box">Smart Vision</div>
+            <div class="head-title">
+                <h1>نظام إدارة بيانات نادي الفجيرة العلمي</h1>
+                <p>وحدة أوامر الشراء</p>
+            </div>
+            <div></div>
+        </div>
+
+        <div class="order-type">أمر شراء محلي</div>
+
+        <div class="doc-title">
+            <p class="ar">طلب شراء محلي</p>
+            <p class="en">Local Purchase Order</p>
+            <p class="no">No. @Model.OrderNumber</p>
+        </div>
+
+        <div class="meta-row">
+            <div class="meta-box">
+                <label>اسم المورد</label>
+                <div class="value">@Model.SupplierName</div>
+            </div>
+            <div class="meta-box">
+                <label>التاريخ</label>
+                <div class="value">@Model.OrderDate.ToString("dd-MM-yyyy")</div>
+            </div>
+        </div>
+
+        <div class="notes-title">
+            <span>يرجى توريد المواد / الخدمات المذكورة أدناه</span>
+            <span>Please supply and deliver the under items / service</span>
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 8%;">الرقم<span class="en">No</span></th>
+                    <th style="width: 52%;" class="left">البيان<span class="en">Particulars</span></th>
+                    <th style="width: 12%;">الكمية<span class="en">Qty</span></th>
+                    <th style="width: 14%;">السعر<span class="en">Price</span></th>
+                    <th style="width: 14%;">الإجمالي<span class="en">Total</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="5">لا توجد بنود</td>
+                    </tr>
+                }
+                else
+                {
+                    for (int i = 0; i < Model.Items.Count; i++)
+                    {
+                        var item = Model.Items[i];
+                        <tr>
+                            <td>@(i + 1)</td>
+                            <td class="left">@item.ItemName</td>
+                            <td>@item.Quantity</td>
+                            <td>@($"AED {item.UnitPrice:N2}")</td>
+                            <td>@($"AED {(item.Quantity * item.UnitPrice):N2}")</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+
+        <table class="totals-wrap">
+            <tr>
+                <td>الإجمالي قبل الضريبة</td>
+                <td>@($"AED {subTotal:N2}")</td>
+            </tr>
+            <tr>
+                <td>VAT 5%</td>
+                <td>@($"AED {vat:N2}")</td>
+            </tr>
+            <tr class="grand">
+                <td>الإجمالي النهائي</td>
+                <td>@($"AED {Model.TotalAmount:N2}")</td>
+            </tr>
+        </table>
+
+        <div class="footer">
+            <div class="footer-note"><strong>ملاحظات:</strong> @Model.Remarks</div>
+            <div class="manager-sign">
+                <span id="managerSignatureTrigger" class="manager-sign-title">Manager / المدير</span>
+                <span id="managerSignature" class="manager-sign-value">@managerSignatureName</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="print-actions">
+        <button class="btn btn-print" onclick="window.print()">طباعة</button>
+        <button class="btn btn-close" onclick="closePrintView()">إغلاق</button>
+    </div>
+
+    <div id="otpModal" class="otp-modal-backdrop" aria-hidden="true">
+        <div class="otp-modal-card" role="dialog" aria-modal="true" aria-labelledby="otpTitle">
+            <div class="otp-modal-head">
+                <span id="otpTitle">تحقق المدير</span>
+                <button type="button" class="otp-close" id="otpCloseBtn" aria-label="Close">×</button>
+            </div>
+            <label class="otp-label" for="otpInput">ادخل OTP</label>
+            <input id="otpInput" type="password" maxlength="4" class="otp-input" placeholder="****" />
+            <div class="otp-hint">كود التجربة الثابت: 1111</div>
+            <div id="otpError" class="otp-error"></div>
+            <div class="otp-actions">
+                <button type="button" class="otp-btn cancel" id="otpCancelBtn">إلغاء</button>
+                <button type="button" class="otp-btn confirm" id="otpConfirmBtn">تأكيد</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function closePrintView() {
+            window.close();
+
+            setTimeout(function () {
+                if (!window.closed) {
+                    if (window.history.length > 1) {
+                        window.history.back();
+                    } else {
+                        window.location.href = '/Admin/PurchaseOrder/Index';
+                    }
+                }
+            }, 150);
+        }
+
+        async function verifyManagerOtpOnServer(otp) {
+            try {
+                const response = await fetch('/Admin/PurchaseOrder/VerifyManagerOtp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ otp: otp })
+                });
+
+                if (!response.ok) {
+                    return { success: false, message: 'فشل التحقق من OTP' };
+                }
+
+                return await response.json();
+            } catch (error) {
+                return { success: false, message: 'تعذر الاتصال بالسيرفر' };
+            }
+        }
+
+        async function requestManagerOtpOnServer() {
+            try {
+                const response = await fetch('/Admin/PurchaseOrder/RequestManagerOtp', {
+                    method: 'POST'
+                });
+
+                if (!response.ok) {
+                    return { success: false, message: 'فشل تجهيز OTP' };
+                }
+
+                return await response.json();
+            } catch (error) {
+                return { success: false, message: 'تعذر الاتصال بالسيرفر' };
+            }
+        }
+
+        const otpModal = document.getElementById('otpModal');
+        const otpInput = document.getElementById('otpInput');
+        const otpError = document.getElementById('otpError');
+        const signature = document.getElementById('managerSignature');
+        const signatureTrigger = document.getElementById('managerSignatureTrigger');
+        let managerSigned = ((signature?.textContent || '').trim().length > 0);
+
+        function refreshSignatureTriggerState() {
+            if (!signatureTrigger) return;
+            signatureTrigger.classList.toggle('can-sign', !managerSigned);
+        }
+
+        function openOtpModal() {
+            if (!otpModal || !otpInput || !otpError) return;
+            otpInput.value = '';
+            otpError.textContent = '';
+            otpModal.classList.add('show');
+            otpModal.setAttribute('aria-hidden', 'false');
+            setTimeout(() => otpInput.focus(), 0);
+        }
+
+        function closeOtpModal() {
+            if (!otpModal) return;
+            otpModal.classList.remove('show');
+            otpModal.setAttribute('aria-hidden', 'true');
+        }
+
+        async function confirmOtp() {
+            if (!otpInput || !otpError) return;
+            const otp = (otpInput.value || '').trim();
+            if (!otp) {
+                otpError.textContent = 'ادخل OTP';
+                return;
+            }
+
+            const result = await verifyManagerOtpOnServer(otp);
+            if (!result || result.success !== true) {
+                otpError.textContent = result?.message || 'OTP غير صحيح';
+                return;
+            }
+
+            if (signature) {
+                signature.textContent = result.managerName || 'ziad';
+            }
+            managerSigned = true;
+            refreshSignatureTriggerState();
+            closeOtpModal();
+        }
+
+        signatureTrigger?.addEventListener('click', async function () {
+            if (managerSigned) return;
+            const issueResult = await requestManagerOtpOnServer();
+            if (!issueResult || issueResult.success !== true) {
+                if (otpError) {
+                    otpError.textContent = issueResult?.message || 'تعذر تجهيز OTP';
+                }
+                return;
+            }
+            openOtpModal();
+        });
+        document.getElementById('otpCloseBtn')?.addEventListener('click', closeOtpModal);
+        document.getElementById('otpCancelBtn')?.addEventListener('click', closeOtpModal);
+        document.getElementById('otpConfirmBtn')?.addEventListener('click', confirmOtp);
+        otpInput?.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmOtp();
+            }
+        });
+        otpModal?.addEventListener('click', function (e) {
+            if (e.target === otpModal) {
+                closeOtpModal();
+            }
+        });
+        refreshSignatureTriggerState();
+
+    </script>
+</body>
+</html>

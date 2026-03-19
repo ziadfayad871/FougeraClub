@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="FougeraClub.Application/FougeraClub.Application.csproj" />
+  <Project Path="FougeraClub.Domain/FougeraClub.Domain.csproj" />
+  <Project Path="FougeraClub.Infrastructure/FougeraClub.Infrastructure.csproj" />
+  <Project Path="FougeraClub/FougeraClub.csproj" />
+</Solution>

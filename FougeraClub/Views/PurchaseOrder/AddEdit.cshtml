@@ -1,0 +1,483 @@
+﻿@model FougeraClub.Application.DTOs.PurchaseOrderDto
+
+@{
+    ViewData["Title"] = "إضافة بنود أمر الشراء";
+    var suppliers = ViewBag.Suppliers as IEnumerable<FougeraClub.Application.DTOs.SupplierLookupDto>;
+    var approvedManagerName = (ViewBag.ManagerApprovedName as string ?? string.Empty).Trim();
+    var managerDisplayName = string.IsNullOrWhiteSpace(approvedManagerName) ? "غير معتمد" : approvedManagerName;
+    var managerApprovedClass = string.IsNullOrWhiteSpace(approvedManagerName) ? string.Empty : "approved";
+}
+
+<!-- Main Container with Explicit RTL -->
+<div class="content-page" dir="rtl" style="text-align: right;">
+    <div class="content">
+        <div class="container-fluid">
+            
+            <!-- Breadcrumbs (Standard Top-Right in RTL) -->
+            <div class="row">
+                <div class="col-12 mt-3 mb-2">
+                    <span class="text-muted small">
+                        أوامر الشراء / إضافة بنود أمر الشراء
+                    </span>
+                </div>
+            </div>
+
+            <form asp-action="AddEdit" method="post" id="purchaseOrderForm">
+                <input type="hidden" asp-for="Id" />
+                
+                <!-- 1. Header Info Row (Right to Left) -->
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-body py-3">
+                        <div class="row g-3 align-items-center">
+                            <!-- Supplier -->
+                            <div class="col-md-3">
+                                <div class="row g-1 align-items-center">
+                                    <div class="col-auto">
+                                        <label class="mb-0 fw-bold text-dark">المورد</label>
+                                    </div>
+                                    <div class="col">
+                                        <select asp-for="SupplierId" class="form-select select2" required>
+                                            <option value="">-- اختر المورد --</option>
+                                            @if (suppliers != null)
+                                            {
+                                                foreach (var supplier in suppliers)
+                                                {
+                                                    <option value="@supplier.Id">@supplier.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Order Number -->
+                            <div class="col-md-3">
+                                <div class="row g-1 align-items-center">
+                                    <div class="col-auto">
+                                        <label class="mb-0 fw-bold text-dark">رقم الشراء</label>
+                                    </div>
+                                    <div class="col text-center">
+                                        <input asp-for="OrderNumber" class="form-control bg-light border-0 text-center fw-bold text-primary" readonly />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Date -->
+                            <div class="col-md-3">
+                                <div class="row g-1 align-items-center">
+                                    <div class="col-auto">
+                                        <label class="mb-0 fw-bold text-dark">التاريخ</label>
+                                    </div>
+                                    <div class="col">
+                                        <input asp-for="OrderDate" type="date" class="form-control" required value="@Model.OrderDate.ToString("yyyy-MM-dd")" />
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- VAT Toggle -->
+                            <div class="col-md-3 text-start">
+                                <div class="form-check form-switch d-inline-block">
+                                    <input asp-for="ApplyVat" class="form-check-input" type="checkbox" id="vatCheckbox" style="cursor: pointer; width: 40px; height: 20px; float: right; margin-left: 10px;">
+                                    <label class="form-check-label fw-bold text-primary" for="vatCheckbox">VAT 5%</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Item Entry Area (Labels on Right, Button on Left) -->
+                <div class="card shadow-sm border-0 mb-4 overflow-hidden">
+                    <div class="card-header bg-primary-lighten py-2">
+                        <h6 class="m-0 fw-bold text-primary">إضافة بنود أمر الشراء</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-0">
+                            <!-- Fields Section (Right Side in RTL) -->
+                            <div class="col-md-8 border-start border-light ps-md-4">
+                                <div class="row mb-3 align-items-center">
+                                    <div class="col-3">
+                                        <label class="fw-bold text-dark m-0">الكمية</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input type="number" id="entryQty" class="form-control form-control-lg border-2" value="1" step="0.01" style="border-color: #f1f3fa;" />
+                                    </div>
+                                </div>
+                                <div class="row mb-3 align-items-center">
+                                    <div class="col-3">
+                                        <label class="fw-bold text-dark m-0 text-nowrap">سعر الوحده</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input type="number" id="entryPrice" class="form-control form-control-lg border-2" value="0" step="0.01" style="border-color: #f1f3fa;" />
+                                    </div>
+                                </div>
+                                <div class="row mb-0 align-items-start">
+                                    <div class="col-3">
+                                        <label class="fw-bold text-dark mt-2">البيان</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <textarea id="entryStatement" class="form-control border-2" rows="4" placeholder="..." style="border-color: #f1f3fa;"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Button Area (Left Side in RTL) -->
+                            <div class="col-md-4 d-flex align-items-center justify-content-center">
+                                <div class="text-center">
+                                    <button type="button" 
+                                            class="btn btn-success btn-lg rounded-pill px-5 shadow-sm" 
+                                            onclick="addItemToList()">
+                                        <i class="ri-add-line me-1"></i> حفظ البند
+                                    </button>
+                                    <p class="text-muted small mt-2">إضافة البند الحالي إلى القائمة بالأسفل</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Items List Table (Theme Styled) -->
+                <div class="card shadow-sm border-0 mb-4 overflow-hidden">
+                    <div class="card-header bg-success-lighten py-2">
+                        <h6 class="m-0 fw-bold text-success">بنود أمر الشراء</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-centered table-hover mb-0 text-center" id="itemsTable">
+                                <thead class="table-light">
+                                    <tr>
+                                        <!-- Order: Qty (Right) -> Price -> Statement -> Action (Left) -->
+                                        <th style="width: 15%;" class="py-3">الكمية</th>
+                                        <th style="width: 15%;" class="py-3">سعر الوحدة</th>
+                                        <th style="width: 55%;" class="py-3 text-start">البيان</th>
+                                        <th style="width: 15%;" class="py-3">أدوات التحكم</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="itemsBody">
+                                    @if (Model.Items != null && Model.Items.Count > 0)
+                                    {
+                                        for (int i = 0; i < Model.Items.Count; i++)
+                                        {
+                                            <tr>
+                                                <td class="py-3 fw-bold text-dark">
+                                                    <input type="hidden" name="Items[@i].Quantity" value="@Model.Items[i].Quantity" />
+                                                    @Model.Items[i].Quantity
+                                                </td>
+                                                <td class="py-3 text-muted">
+                                                    <input type="hidden" name="Items[@i].UnitPrice" value="@Model.Items[i].UnitPrice" />
+                                                    @Model.Items[i].UnitPrice.ToString("N2")
+                                                </td>
+                                                <td class="py-3 text-start text-dark fw-medium">
+                                                    <input type="hidden" name="Items[@i].ItemName" value="@Model.Items[i].ItemName" />
+                                                    @Model.Items[i].ItemName
+                                                </td>
+                                                <td class="py-3">
+                                                    <button type="button" class="btn btn-sm btn-soft-danger rounded-circle" onclick="removeRow(this)">
+                                                        <i class="ri-delete-bin-line"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Footer Calculations & Save Button -->
+                <div class="row align-items-center mt-5 mb-5 pb-5">
+                    <!-- Totals on the Right -->
+                    <div class="col-md-6 mb-3 mb-md-0">
+                         <div class="d-inline-block bg-light p-3 rounded-pill px-4 shadow-sm border">
+                            <span class="text-muted fw-bold me-3">الإجمالي النهائي:</span>
+                            <span class="text-primary fw-bolder fs-4" id="grandTotal">0.00</span>
+                        </div>
+                    </div>
+                    <!-- Actions on the Left -->
+                    <div class="col-md-6 text-start">
+                        <a href="/Admin/PurchaseOrder/Index" class="btn btn-light rounded-pill px-4 me-3">إلغاء</a>
+                        <button type="submit" class="btn btn-primary btn-lg rounded-pill px-5 shadow">
+                            <i class="ri-save-line me-1"></i> حفظ أمر الشراء النهائي
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mb-4">
+                    <div class="manager-box text-end">
+                        <button type="button" class="btn btn-link p-0 fw-bold manager-trigger" id="managerOtpBtn">
+                            المدير
+                        </button>
+                        <div id="managerNameBadge" class="manager-name @managerApprovedClass">@managerDisplayName</div>
+                        <input type="hidden" id="managerApprovedName" name="managerApprovedName" value="@approvedManagerName" />
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="managerOtpModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">تحقق المدير</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label fw-bold">ادخل OTP</label>
+                <input type="password" class="form-control" id="managerOtpInput" maxlength="4" placeholder="****" />
+                <small class="text-muted d-block mt-2">للتجربة الكود: 1111</small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-primary" id="managerOtpConfirmBtn">تأكيد</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Theme color accents */
+    .bg-primary-lighten { background-color: rgba(114, 124, 245, 0.1); }
+    .bg-success-lighten { background-color: rgba(10, 207, 151, 0.1); }
+    
+    .card { border-radius: 0.75rem !important; }
+    .form-control, .form-select { border-radius: 0.5rem !important; border: 1px solid #dee2e6; text-align: right; }
+    .form-control:focus { border-color: #727cf5; box-shadow: none; }
+    
+    .btn-soft-danger { background-color: rgba(250, 92, 124, 0.1); color: #fa5c7c; }
+    .btn-soft-danger:hover { background-color: #fa5c7c; color: #fff; }
+    .manager-box { min-width: 140px; }
+    .manager-trigger { color: #3fa847 !important; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+    .manager-trigger:hover { color: #2f8d38 !important; }
+    .manager-name {
+        margin-top: 6px;
+        font-weight: 700;
+        color: #667085;
+        min-height: 22px;
+    }
+    .manager-name.approved { color: #2f8d38; }
+
+    /* Custom Switch Adjustment for RTL */
+    .form-switch { margin-left: 0; padding-left: 0; }
+    .form-switch .form-check-input { width: 40px; }
+
+    /* Table Headers Color */
+    .table thead th { background-color: #f1f3fa; color: #6c757d; font-weight: 700; border: none; }
+    
+    /* Responsive Spacing */
+    @@media (max-width: 768px) {
+        .col-md-3 { margin-bottom: 10px; }
+    }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function() {
+            if ($.fn.select2) {
+                $('.select2').select2({
+                    dir: 'rtl',
+                    dropdownParent: $('#purchaseOrderForm')
+                });
+            }
+            updateGrandTotal();
+            $('#vatCheckbox').change(function() { updateGrandTotal(); });
+
+            const managerOtpModalEl = document.getElementById('managerOtpModal');
+            const managerOtpModal = (window.bootstrap && managerOtpModalEl)
+                ? new bootstrap.Modal(managerOtpModalEl)
+                : null;
+            const managerNameBadge = $('#managerNameBadge');
+            const managerApprovedName = $('#managerApprovedName');
+
+            function openManagerOtpModal() {
+                if (managerOtpModal) {
+                    managerOtpModal.show();
+                    return;
+                }
+
+                if (!managerOtpModalEl) return;
+                managerOtpModalEl.style.display = 'block';
+                managerOtpModalEl.classList.add('show');
+                managerOtpModalEl.removeAttribute('aria-hidden');
+                managerOtpModalEl.setAttribute('aria-modal', 'true');
+                document.body.classList.add('modal-open');
+            }
+
+            function closeManagerOtpModal() {
+                if (managerOtpModal) {
+                    managerOtpModal.hide();
+                    return;
+                }
+
+                if (!managerOtpModalEl) return;
+                managerOtpModalEl.style.display = 'none';
+                managerOtpModalEl.classList.remove('show');
+                managerOtpModalEl.setAttribute('aria-hidden', 'true');
+                managerOtpModalEl.removeAttribute('aria-modal');
+                document.body.classList.remove('modal-open');
+            }
+
+            function setManagerName(name) {
+                const normalized = (name || '').trim();
+                if (normalized) {
+                    managerApprovedName.val(normalized);
+                    managerNameBadge.text(normalized).addClass('approved');
+                    return;
+                }
+
+                managerApprovedName.val('');
+                managerNameBadge.text('غير معتمد').removeClass('approved');
+            }
+
+            async function requestManagerOtpOnServer() {
+                try {
+                    const response = await fetch('/Admin/PurchaseOrder/RequestManagerOtp', {
+                        method: 'POST'
+                    });
+                    if (!response.ok) {
+                        return { success: false, message: 'فشل تجهيز OTP' };
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    return { success: false, message: 'تعذر الاتصال بالسيرفر' };
+                }
+            }
+
+            $('#managerOtpBtn').on('click', async function () {
+                const issueResult = await requestManagerOtpOnServer();
+                if (!issueResult || issueResult.success !== true) {
+                    toastr.error(issueResult?.message || 'تعذر تجهيز OTP');
+                    return;
+                }
+
+                $('#managerOtpInput').val('');
+                openManagerOtpModal();
+            });
+
+            $('#managerOtpModal [data-bs-dismiss="modal"], #managerOtpModal .btn-close').on('click', function () {
+                closeManagerOtpModal();
+            });
+            async function verifyManagerOtpOnServer(otp) {
+                try {
+                    const response = await fetch('/Admin/PurchaseOrder/VerifyManagerOtp', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ otp: otp })
+                    });
+
+                    if (!response.ok) {
+                        return { success: false, message: 'فشل التحقق من OTP' };
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    return { success: false, message: 'تعذر الاتصال بالسيرفر' };
+                }
+            }
+
+            $('#managerOtpConfirmBtn').on('click', async function () {
+                const otp = ($('#managerOtpInput').val() || '').trim();
+                if (!otp) {
+                    toastr.error('ادخل OTP');
+                    return;
+                }
+
+                const result = await verifyManagerOtpOnServer(otp);
+                if (!result || result.success !== true) {
+                    toastr.error(result?.message || 'OTP غير صحيح');
+                    return;
+                }
+
+                setManagerName(result.managerName || 'ziad');
+
+                closeManagerOtpModal();
+                toastr.success(`تم اعتماد المدير: ${result.managerName || 'ziad'}`);
+            });
+        });
+
+        function addItemToList() {
+            var qty = parseFloat($('#entryQty').val()) || 0;
+            var price = parseFloat($('#entryPrice').val()) || 0;
+            var statement = $('#entryStatement').val().trim();
+
+            if (statement === "") {
+                toastr.error("يجب إدخال البيان (الوصف)");
+                return;
+            }
+            if (qty <= 0) {
+                toastr.error("الكمية يجب أن تكون أكبر من صفر");
+                return;
+            }
+
+            var index = $('#itemsBody tr').length;
+            var newRow = `
+                <tr>
+                    <td class="py-3 fw-bold text-dark">
+                        <input type="hidden" name="Items[${index}].Quantity" value="${qty}" />
+                        ${qty}
+                    </td>
+                    <td class="py-3 text-muted">
+                        <input type="hidden" name="Items[${index}].UnitPrice" value="${price}" />
+                        ${price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </td>
+                    <td class="py-3 text-start text-dark fw-medium">
+                        <input type="hidden" name="Items[${index}].ItemName" value="${statement}" />
+                        ${statement}
+                    </td>
+                    <td class="py-3">
+                        <button type="button" class="btn btn-sm btn-soft-danger rounded-circle" onclick="removeRow(this)">
+                            <i class="ri-delete-bin-line"></i>
+                        </button>
+                    </td>
+                </tr>`;
+
+            $('#itemsBody').append(newRow);
+            
+            // Clear inputs
+            $('#entryQty').val(1);
+            $('#entryPrice').val(0);
+            $('#entryStatement').val("");
+            
+            reIndexRows();
+            updateGrandTotal();
+            toastr.info("تمت إضافة البند إلى القائمة");
+        }
+
+        function removeRow(btn) {
+            $(btn).closest('tr').remove();
+            reIndexRows();
+            updateGrandTotal();
+        }
+
+        function reIndexRows() {
+            $('#itemsBody tr').each(function(index, row) {
+                $(row).find('input').each(function() {
+                    var name = $(this).attr('name');
+                    if (name) {
+                        var newName = name.replace(/\[\d+\]/, '[' + index + ']');
+                        $(this).attr('name', newName);
+                    }
+                });
+            });
+        }
+
+        function updateGrandTotal() {
+            var total = 0;
+            $('#itemsBody tr').each(function() {
+                var qty = parseFloat($(this).find('input[name*="Quantity"]').val()) || 0;
+                var price = parseFloat($(this).find('input[name*="UnitPrice"]').val()) || 0;
+                total += (qty * price);
+            });
+
+            var applyVat = $('#vatCheckbox').is(':checked');
+            var vat = applyVat ? (total * 0.05) : 0;
+            var grandTotal = total + vat;
+
+            $('#grandTotal').text(grandTotal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        }
+    </script>
+}
+

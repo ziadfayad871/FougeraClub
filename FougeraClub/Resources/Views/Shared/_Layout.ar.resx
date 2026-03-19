@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Statistics" xml:space="preserve"><value>الإحصائيات</value></data>
+  <data name="ActivitiesManagement" xml:space="preserve"><value>إدارة الأنشطة</value></data>
+  <data name="Members" xml:space="preserve"><value>الأعضاء</value></data>
+  <data name="RegisteredInCourses" xml:space="preserve"><value>المسجلين في الدورات</value></data>
+  <data name="CoursesList" xml:space="preserve"><value>قائمة الدورات</value></data>
+  <data name="AddNewCourse" xml:space="preserve"><value>إضافة دورة جديدة</value></data>
+  <data name="Trainers" xml:space="preserve"><value>المدربين</value></data>
+  <data name="AddNewTrainer" xml:space="preserve"><value>إضافة مدرب جديد</value></data>
+  <data name="EventsManagement" xml:space="preserve"><value>إدارة الفعاليات</value></data>
+  <data name="EventsList" xml:space="preserve"><value>قائمة الفعاليات</value></data>
+  <data name="AddNewEvent" xml:space="preserve"><value>إضافة فعالية جديدة</value></data>
+  <data name="FinancialManagement" xml:space="preserve"><value>إدارة المالية</value></data>
+  <data name="BudgetItems" xml:space="preserve"><value>بنود الميزانية</value></data>
+  <data name="AddExpenseReceipt" xml:space="preserve"><value>إضافة مصروف/إيراد</value></data>
+  <data name="Expenses" xml:space="preserve"><value>المصروفات</value></data>
+  <data name="Receipts" xml:space="preserve"><value>الإيرادات</value></data>
+  <data name="ReceiptsAndPaymentsReport" xml:space="preserve"><value>تقرير الإيرادات والمدفوعات</value></data>
+  <data name="PettyCashReport" xml:space="preserve"><value>تقرير النثرية</value></data>
+  <data name="CashExchangeBonds" xml:space="preserve"><value>سندات صرف نقدية</value></data>
+  <data name="CashDisbursementVouchers" xml:space="preserve"><value>قسائم صرف نقدية</value></data>
+  <data name="SalaryManagement" xml:space="preserve"><value>إدارة الرواتب</value></data>
+  <data name="SalaryManagementList" xml:space="preserve"><value>قائمة إدارة الرواتب</value></data>
+  <data name="AddSalaryManagement" xml:space="preserve"><value>إضافة إدارة الرواتب</value></data>
+  <data name="AbsenceList" xml:space="preserve"><value>قائمة الغياب</value></data>
+  <data name="PurchaseOrderManagement" xml:space="preserve"><value>إدارة أوامر الشراء</value></data>
+  <data name="PurchaseOrderList" xml:space="preserve"><value>قائمة أوامر الشراء</value></data>
+  <data name="CreatePurchaseOrder" xml:space="preserve"><value>إنشاء أمر شراء</value></data>
+  <data name="ExternalWorkMission" xml:space="preserve"><value>مهمة عمل خارجية</value></data>
+  <data name="ExternalWorkMissions" xml:space="preserve"><value>مهام العمل الخارجية</value></data>
+  <data name="EstimatedBudgetForExternalParticipation" xml:space="preserve"><value>ميزانية تقديرية للمشاركة الخارجية</value></data>
+  <data name="ParticipationsInEventReport" xml:space="preserve"><value>تقرير المشاركات في الفعاليات</value></data>
+  <data name="MonthlyAdministrativeReports" xml:space="preserve"><value>التقارير الإدارية الشهرية</value></data>
+  <data name="AdministrativeReportQuarterlyAnnual" xml:space="preserve"><value>تقرير إداري ربع سنوي/سنوي</value></data>
+  <data name="EmployeesManagement" xml:space="preserve"><value>إدارة الموظفين</value></data>
+  <data name="EmployeesList" xml:space="preserve"><value>قائمة الموظفين</value></data>
+  <data name="AddNewEmployee" xml:space="preserve"><value>إضافة موظف جديد</value></data>
+  <data name="CarsManagement" xml:space="preserve"><value>إدارة السيارات</value></data>
+  <data name="CarsList" xml:space="preserve"><value>قائمة السيارات</value></data>
+  <data name="CarsMaintenance" xml:space="preserve"><value>صيانة السيارات</value></data>
+  <data name="ClubMaintenanceManagement" xml:space="preserve"><value>إدارة صيانة النادي</value></data>
+  <data name="MaintenanceList" xml:space="preserve"><value>قائمة الصيانة</value></data>
+  <data name="AddNewMaintenance" xml:space="preserve"><value>إضافة صيانة جديدة</value></data>
+  <data name="SuppliersManagement" xml:space="preserve"><value>إدارة الموردين</value></data>
+  <data name="SuppliersList" xml:space="preserve"><value>قائمة الموردين</value></data>
+  <data name="AddNewSupplier" xml:space="preserve"><value>إضافة مورد جديد</value></data>
+  <data name="AnnualInventoryManagement" xml:space="preserve"><value>إدارة الجرد السنوي</value></data>
+  <data name="InventoryList" xml:space="preserve"><value>قائمة الجرد</value></data>
+  <data name="AddNewInventory" xml:space="preserve"><value>إضافة جرد جديد</value></data>
+  <data name="ArchivingDocumentManagement" xml:space="preserve"><value>إدارة أرشفة المستندات</value></data>
+  <data name="ArchivingDocumentList" xml:space="preserve"><value>قائمة أرشفة المستندات</value></data>
+  <data name="AddNewArchivingDocument" xml:space="preserve"><value>إضافة أرشفة مستند جديد</value></data>
+  <data name="EngineersAssociationManagement" xml:space="preserve"><value>إدارة جمعية المهندسين</value></data>
+  <data name="EngineersList" xml:space="preserve"><value>قائمة المهندسين</value></data>
+  <data name="AddNewEngineer" xml:space="preserve"><value>إضافة مهندس جديد</value></data>
+  <data name="ScientificProjectsManagement" xml:space="preserve"><value>إدارة المشاريع العلمية</value></data>
+  <data name="ScientificProjectsList" xml:space="preserve"><value>قائمة المشاريع العلمية</value></data>
+  <data name="AddNewScientificProject" xml:space="preserve"><value>إضافة مشروع علمي جديد</value></data>
+  <data name="SMSNotificationUnit" xml:space="preserve"><value>وحدة إشعارات SMS</value></data>
+  <data name="SMS" xml:space="preserve"><value>رسائل نصية</value></data>
+  <data name="Messages" xml:space="preserve"><value>الرسائل</value></data>
+  <data name="UsersManagementUnit" xml:space="preserve"><value>وحدة إدارة المستخدمين</value></data>
+</root>
