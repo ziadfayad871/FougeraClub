@@ -10,9 +10,18 @@ namespace FougeraClub.Infrastructure.Persistence
     {
         public static async Task SeedAsync(ApplicationDbContext context, ILogger logger)
         {
-            // Apply pending migrations first
-            await context.Database.MigrateAsync();
-            logger.LogInformation("Database migrations applied successfully.");
+            var providerName = context.Database.ProviderName ?? "Unknown";
+
+            if (providerName.Contains("SqlServer", StringComparison.OrdinalIgnoreCase))
+            {
+                await context.Database.MigrateAsync();
+                logger.LogInformation("Database migrations applied successfully for provider {ProviderName}.", providerName);
+            }
+            else
+            {
+                await context.Database.EnsureCreatedAsync();
+                logger.LogInformation("Database ensured successfully for provider {ProviderName}.", providerName);
+            }
 
             // No manual ADO.NET probing here; EF Core handles connection lifecycle.
 

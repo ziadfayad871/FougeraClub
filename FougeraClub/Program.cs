@@ -16,22 +16,47 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
 var sqlConnectionString = builder.Configuration.GetConnectionString("default");
-if (string.IsNullOrWhiteSpace(sqlConnectionString))
-{
-    throw new InvalidOperationException("ConnectionStrings:default is required.");
-}
+var useSqliteFallback =
+    !builder.Environment.IsDevelopment() &&
+    (string.IsNullOrWhiteSpace(sqlConnectionString) ||
+     sqlConnectionString.Contains("(localdb)", StringComparison.OrdinalIgnoreCase));
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+string databaseProviderDescription;
+
+if (useSqliteFallback)
 {
-    options.UseSqlServer(sqlConnectionString, sqlOptions =>
+    var appDataDirectory = Path.Combine(builder.Environment.ContentRootPath, "App_Data");
+    Directory.CreateDirectory(appDataDirectory);
+
+    var sqliteDatabasePath = Path.Combine(appDataDirectory, "FougeraClub.db");
+    var sqliteConnectionString = $"Data Source={sqliteDatabasePath}";
+
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlite(sqliteConnectionString));
+
+    databaseProviderDescription = $"SQLite ({sqliteDatabasePath})";
+}
+else
+{
+    if (string.IsNullOrWhiteSpace(sqlConnectionString))
     {
-        sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
-            maxRetryDelay: TimeSpan.FromSeconds(10),
-            errorNumbersToAdd: null);
-        sqlOptions.CommandTimeout(60);
+        throw new InvalidOperationException("ConnectionStrings:default is required.");
+    }
+
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    {
+        options.UseSqlServer(sqlConnectionString, sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
+                errorNumbersToAdd: null);
+            sqlOptions.CommandTimeout(60);
+        });
     });
-});
+
+    databaseProviderDescription = "SQL Server";
+}
 
 builder.Services.AddSession(options =>
 {
@@ -56,6 +81,7 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<INotificationStore, InMemoryNotificationStore>();
 
 var app = builder.Build();
+app.Logger.LogInformation("Using database provider: {DatabaseProvider}", databaseProviderDescription);
 
 using (var scope = app.Services.CreateScope())
 {
@@ -63,7 +89,14 @@ using (var scope = app.Services.CreateScope())
     var logger = services.GetRequiredService<ILogger<Program>>();
     var db = services.GetRequiredService<ApplicationDbContext>();
 
-    await DbInitializer.SeedAsync(db, logger);
+    try
+    {
+        await DbInitializer.SeedAsync(db, logger);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Database initialization failed during startup. The app will continue running, but database-backed features may be unavailable.");
+    }
 }
 
 if (!app.Environment.IsDevelopment())
