@@ -24,11 +24,31 @@ jobs:
       - name: Test with .NET
         run: dotnet test FougeraClub.sln --configuration Release --no-build
 
-      - name: Deploy to MonsterASP.NET via WebDeploy
-        uses: rasmusbuchholdt/simply-web-deploy@2.2.0
-        with:
-          website-name: ${{ secrets.WEBSITE_NAME }}
-          server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
-          server-username: ${{ secrets.SERVER_USERNAME }}
-          server-password: ${{ secrets.SERVER_PASSWORD }}
-          source-path: '\publish\'
+      - name: Deploy to MonsterASP.NET via msdeploy
+        shell: pwsh
+        env:
+          WEBSITE_NAME: ${{ secrets.WEBSITE_NAME }}
+          SERVER_COMPUTER_NAME: ${{ secrets.SERVER_COMPUTER_NAME }}
+          SERVER_USERNAME: ${{ secrets.SERVER_USERNAME }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          $msdeploy = "C:\Program Files (x86)\IIS\Microsoft Web Deploy V3\msdeploy.exe"
+          $sourcePath = (Resolve-Path "./publish").Path
+          $serverComputerName = $env:SERVER_COMPUTER_NAME.TrimEnd('/')
+
+          if ($serverComputerName -match '/msdeploy\.axd(\?.*)?$') {
+            $destUrl = $serverComputerName
+          }
+          else {
+            $destUrl = "$serverComputerName/msdeploy.axd?site=$($env:WEBSITE_NAME)"
+          }
+
+          & $msdeploy `
+            -verb:sync `
+            "-source:contentPath=$sourcePath" `
+            "-dest:contentPath=$($env:WEBSITE_NAME),computerName=$destUrl,userName=$($env:SERVER_USERNAME),password=$($env:SERVER_PASSWORD),authType=Basic,includeAcls=False" `
+            -allowUntrusted `
+            -disableLink:AppPoolExtension `
+            -disableLink:ContentExtension `
+            -disableLink:CertificateExtension `
+            -verbose
