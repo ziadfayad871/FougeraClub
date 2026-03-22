@@ -154,9 +154,21 @@
                         </table>
                     </div>
                     <div class="purchase-pagination-wrap print-hide">
-                        <nav aria-label="Table pagination">
-                            <ul class="pagination justify-content-center mb-0" id="ordersPagination"></ul>
-                        </nav>
+                        <div class="purchase-table-footer">
+                            <div class="purchase-table-summary" id="ordersPaginationSummary">عرض 0 من 0</div>
+                            <div class="purchase-table-page-size">
+                                <label for="ordersPageSize" class="purchase-table-page-size-label">عدد السجلات</label>
+                                <select id="ordersPageSize" class="form-select form-select-sm purchase-table-page-size-select">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <nav aria-label="Table pagination">
+                                <ul class="pagination justify-content-center mb-0" id="ordersPagination"></ul>
+                            </nav>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -426,6 +438,37 @@
         background: #fff;
     }
 
+    .purchase-table-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .purchase-table-summary {
+        color: #5d6773;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .purchase-table-page-size {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .purchase-table-page-size-label {
+        color: #5d6773;
+        font-weight: 600;
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .purchase-table-page-size-select {
+        min-width: 84px;
+    }
+
     #ordersPagination .page-link {
         color: #4c5560;
         border-color: #dfe5ea;
@@ -441,6 +484,18 @@
 
     #ordersPagination .page-item.disabled .page-link {
         color: #a8b0b8;
+    }
+
+    @@media (max-width: 768px) {
+        .purchase-table-footer {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .purchase-table-summary,
+        .purchase-table-page-size {
+            justify-content: center;
+        }
     }
 
     @@media print {

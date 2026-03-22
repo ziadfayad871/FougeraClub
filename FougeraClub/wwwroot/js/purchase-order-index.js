@@ -60,10 +60,15 @@
         var clearFiltersBtn = document.getElementById('clearFiltersBtn');
         var tableRows = Array.from(document.querySelectorAll('#ordersTable tbody .po-row'));
         var pagination = document.getElementById('ordersPagination');
-        var pageSize = 10;
+        var paginationSummary = document.getElementById('ordersPaginationSummary');
+        var pageSizeSelect = document.getElementById('ordersPageSize');
+        var pageSize = pageSizeSelect ? parseInt(pageSizeSelect.value || '10', 10) : 10;
         var currentPage = 1;
-        var totalPages = Math.max(1, Math.ceil(tableRows.length / pageSize));
         var selectedPrintRowId = null;
+
+        function getTotalPages() {
+            return Math.max(1, Math.ceil(tableRows.length / pageSize));
+        }
 
         addButtons.forEach(function (btn) {
             btn.addEventListener('click', function () {
@@ -176,6 +181,7 @@
         }
 
         function renderPage(page) {
+            var totalPages = getTotalPages();
             currentPage = page;
             var start = (page - 1) * pageSize;
             var end = start + pageSize;
@@ -183,9 +189,21 @@
             tableRows.forEach(function (row, index) {
                 row.style.display = index >= start && index < end ? '' : 'none';
             });
+
+            if (paginationSummary) {
+                if (tableRows.length === 0) {
+                    paginationSummary.textContent = 'عرض 0 من 0';
+                    return;
+                }
+
+                var fromRecord = start + 1;
+                var toRecord = Math.min(end, tableRows.length);
+                paginationSummary.textContent = 'عرض ' + fromRecord + ' - ' + toRecord + ' من ' + tableRows.length;
+            }
         }
 
         function renderPagination() {
+            var totalPages = getTotalPages();
             if (!pagination) return;
             if (tableRows.length <= pageSize) {
                 pagination.innerHTML = '';
@@ -210,9 +228,20 @@
             pagination.addEventListener('click', function (e) {
                 var btn = e.target.closest('button[data-page]');
                 if (!btn) return;
+                var totalPages = getTotalPages();
                 var page = parseInt(btn.dataset.page || '1', 10);
                 if (Number.isNaN(page) || page < 1 || page > totalPages || page === currentPage) return;
                 renderPage(page);
+                renderPagination();
+            });
+        }
+
+        if (pageSizeSelect) {
+            pageSizeSelect.addEventListener('change', function () {
+                var nextSize = parseInt(this.value || '10', 10);
+                pageSize = Number.isNaN(nextSize) || nextSize <= 0 ? 10 : nextSize;
+                currentPage = 1;
+                renderPage(currentPage);
                 renderPagination();
             });
         }
