@@ -205,10 +205,6 @@
         function renderPagination() {
             var totalPages = getTotalPages();
             if (!pagination) return;
-            if (tableRows.length <= pageSize) {
-                pagination.innerHTML = '';
-                return;
-            }
 
             var html = '';
             var prevDisabled = currentPage === 1 ? 'disabled' : '';
