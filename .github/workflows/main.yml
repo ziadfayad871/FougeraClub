@@ -19,7 +19,7 @@ jobs:
         run: dotnet build FougeraClub.sln --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish FougeraClub/FougeraClub.csproj --configuration Release --output ./publish --runtime win-x86 --no-build
+        run: dotnet publish FougeraClub/FougeraClub.csproj --configuration Release --output ./publish --runtime win-x86
         
       - name: Test with .NET
         run: dotnet test FougeraClub.sln --configuration Release --no-build
