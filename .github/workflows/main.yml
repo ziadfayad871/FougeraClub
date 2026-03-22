@@ -45,6 +45,7 @@ jobs:
 
           & $msdeploy `
             -verb:sync `
+            -enableRule:AppOffline `
             "-source:contentPath=$sourcePath" `
             "-dest:contentPath=$($env:WEBSITE_NAME),computerName=$destUrl,userName=$($env:SERVER_USERNAME),password=$($env:SERVER_PASSWORD),authType=Basic,includeAcls=False" `
             -allowUntrusted `
