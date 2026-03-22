@@ -34,7 +34,7 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <div class="d-flex justify-content-end mb-3">
-                        <button type="button" class="btn btn-success btn-rounded mb-0" data-bs-toggle="modal" data-bs-target="#addOrderModal">
+                        <button type="button" class="btn btn-success btn-sm btn-rounded mb-0 purchase-add-btn" data-bs-toggle="modal" data-bs-target="#addOrderModal">
                             <i class="ri-add-circle-fill me-1"></i> إضافة أمر شراء
                         </button>
                     </div>
@@ -87,8 +87,20 @@
 
     <div class="row mt-3">
         <div class="col-12">
-            <div class="card shadow-sm border-0">
-                <div class="card-body p-0">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-0">
+                    <div class="purchase-table-topbar print-hide">
+                        <div class="purchase-table-summary" id="ordersPaginationSummary">عرض 0 من 0</div>
+                        <div class="purchase-table-page-size">
+                            <label for="ordersPageSize" class="purchase-table-page-size-label">عدد السجلات</label>
+                            <select id="ordersPageSize" class="form-select form-select-sm purchase-table-page-size-select">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-centered table-hover mb-0 po-table-rtl" id="ordersTable">
                             <thead class="table-light">
@@ -154,21 +166,9 @@
                         </table>
                     </div>
                     <div class="purchase-pagination-wrap print-hide">
-                        <div class="purchase-table-footer">
-                            <div class="purchase-table-summary" id="ordersPaginationSummary">عرض 0 من 0</div>
-                            <div class="purchase-table-page-size">
-                                <label for="ordersPageSize" class="purchase-table-page-size-label">عدد السجلات</label>
-                                <select id="ordersPageSize" class="form-select form-select-sm purchase-table-page-size-select">
-                                    <option value="5">5</option>
-                                    <option value="10" selected>10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
-                                </select>
-                            </div>
-                            <nav aria-label="Table pagination">
-                                <ul class="pagination justify-content-center mb-0" id="ordersPagination"></ul>
-                            </nav>
-                        </div>
+                        <nav aria-label="Table pagination">
+                            <ul class="pagination justify-content-center mb-0" id="ordersPagination"></ul>
+                        </nav>
                     </div>
                 </div>
             </div>
@@ -263,7 +263,7 @@
     }
 
     .page-title-box {
-        padding: 20px 0;
+        padding: 14px 0;
     }
 
     #purchaseOrdersPage .card {
@@ -315,17 +315,18 @@
     }
 
     .report-toolbar .btn-report-action {
-        min-width: 200px;
-        height: 44px;
+        min-width: 150px;
+        height: 36px;
         border-radius: 4px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         font-weight: 700;
         gap: 6px;
-        font-size: 15px;
+        font-size: 14px;
         border: 0;
         background-color: #3fa847;
+        padding-inline: 14px;
     }
 
     .report-toolbar .btn-report-action:hover {
@@ -333,15 +334,22 @@
     }
 
     .btn-filter-action {
-        height: 46px;
+        height: 38px;
         border-radius: 4px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
         font-weight: 700;
-        font-size: 15px;
+        font-size: 14px;
         border: 0;
+    }
+
+    .purchase-add-btn {
+        min-width: 160px;
+        height: 38px;
+        padding-inline: 14px;
+        font-size: 14px;
     }
 
     .btn-filter-clear {
@@ -363,6 +371,12 @@
     .filter-form .filter-col .form-select,
     .filter-form .filter-col .btn-filter-action {
         width: 100%;
+    }
+
+    .filter-form .filter-col .form-control,
+    .filter-form .filter-col .form-select {
+        height: 38px;
+        font-size: 14px;
     }
 
     @@media (min-width: 1200px) {
@@ -400,15 +414,16 @@
     .po-table-rtl th,
     .po-table-rtl td {
         vertical-align: middle;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
+        padding-top: 0.8rem;
+        padding-bottom: 0.8rem;
         white-space: nowrap;
+        font-size: 14px;
     }
 
     @@media (max-width: 992px) {
         .report-toolbar .btn-report-action {
-            min-width: 160px;
-            height: 42px;
+            min-width: 132px;
+            height: 34px;
         }
     }
 
@@ -432,30 +447,34 @@
         min-width: 210px;
     }
 
-    .purchase-pagination-wrap {
-        padding: 14px 16px 18px;
-        border-top: 1px solid #edf0f2;
-        background: #fff;
-    }
-
-    .purchase-table-footer {
+    .purchase-table-topbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 14px;
-        flex-wrap: wrap;
+        padding: 14px 16px 10px;
+        background: #fff;
+        border-bottom: 1px solid #edf0f2;
+    }
+
+    .purchase-pagination-wrap {
+        padding: 12px 16px 16px;
+        border-top: 1px solid #edf0f2;
+        background: #fff;
     }
 
     .purchase-table-summary {
         color: #5d6773;
         font-weight: 600;
         white-space: nowrap;
+        text-align: right;
     }
 
     .purchase-table-page-size {
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        margin-inline-start: auto;
     }
 
     .purchase-table-page-size-label {
@@ -466,14 +485,32 @@
     }
 
     .purchase-table-page-size-select {
-        min-width: 84px;
+        min-width: 72px;
+        height: 34px;
+        font-size: 13px;
+    }
+
+    .action-controls .btn {
+        width: 30px;
+        height: 30px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
     }
 
     #ordersPagination .page-link {
         color: #4c5560;
         border-color: #dfe5ea;
-        min-width: 38px;
+        min-width: 34px;
+        height: 34px;
+        padding-inline: 10px;
         text-align: center;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
     }
 
     #ordersPagination .page-item.active .page-link {
@@ -487,7 +524,7 @@
     }
 
     @@media (max-width: 768px) {
-        .purchase-table-footer {
+        .purchase-table-topbar {
             flex-direction: column;
             align-items: stretch;
         }
@@ -495,6 +532,7 @@
         .purchase-table-summary,
         .purchase-table-page-size {
             justify-content: center;
+            margin-inline-start: 0;
         }
     }
 
