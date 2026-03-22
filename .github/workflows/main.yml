@@ -10,19 +10,19 @@ jobs:
       - name: Setup .NET 9
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0
+          dotnet-version: 9.0.x
           
       - name: Install dependencies
-        run: dotnet restore
+        run: dotnet restore FougeraClub.sln
         
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build FougeraClub.sln --configuration Release --no-restore
 
       - name: Publish
-        run: dotnet publish --configuration Release --output ./publish --runtime win-x86 
+        run: dotnet publish FougeraClub/FougeraClub.csproj --configuration Release --output ./publish --runtime win-x86 --no-build
         
       - name: Test with .NET
-        run: dotnet test
+        run: dotnet test FougeraClub.sln --configuration Release --no-build
 
       - name: Deploy to MonsterASP.NET via WebDeploy
         uses: rasmusbuchholdt/simply-web-deploy@2.1.0
@@ -31,3 +31,4 @@ jobs:
           server-computer-name: ${{ secrets.SERVER_COMPUTER_NAME }}
           server-username: ${{ secrets.SERVER_USERNAME }}
           server-password: ${{ secrets.SERVER_PASSWORD }}
+          source-path: '\publish\'
