@@ -114,7 +114,7 @@
                                             <td class="text-center">@item.OrderDate.ToString("dd-MM-yyyy")</td>
                                             <td class="print-hide">
                                                 <div class="d-flex justify-content-center gap-1 action-controls">
-                                                    <a href="/Admin/PurchaseOrder/AddEdit" class="btn-control btn-icon btn-sm rounded-circle purchase-action-btn purchase-action-add" title="إضافة">
+                                                    <a href="/Admin/PurchaseOrder/AddEdit?copyFromId=@item.Id" class="btn-control btn-icon btn-sm rounded-circle purchase-action-btn purchase-action-add" title="إضافة">
                                                         <i class="fa-solid fa-plus"></i>
                                                     </a>
                                                     <a

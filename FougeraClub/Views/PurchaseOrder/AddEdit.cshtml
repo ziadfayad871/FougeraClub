@@ -9,8 +9,8 @@
 <div class="content-page purchase-order-editor-page" dir="rtl">
     <div class="content">
         <div class="container-fluid">
-            <div class="row my-3 d-flex justify-content-between align-items-center flex-wrap">
-                <div class="col-md-6 mb-2">
+            <div class="row my-3 d-flex justify-content-between align-items-center flex-wrap purchase-header-row">
+                <div class="col-md-6 mb-2 purchase-header-title-col">
                     <div class="d-flex align-items-center">
                         <h4 class="ico-header-title my-1 ms-lg-1 ms-md-1">
                             <span class="fa fa-book me-2 text-ico"></span>
@@ -18,8 +18,8 @@
                         </h4>
                     </div>
                 </div>
-                <div class="col-md-6 mb-2">
-                    <nav class="d-flex align-items-center justify-content-end" aria-label="breadcrumb">
+                <div class="col-md-6 mb-2 purchase-header-breadcrumb-col">
+                    <nav class="d-flex align-items-center justify-content-start purchase-breadcrumb-nav" aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 py-2 flex-nowrap">
                             <li class="breadcrumb-item">
                                 <a href="/Admin/Home/Index">أوامر الشراء</a>
@@ -170,6 +170,24 @@
         max-width: calc(100% - 24px);
     }
 
+    .purchase-header-row {
+        flex-direction: row-reverse;
+    }
+
+    .purchase-header-title-col .d-flex {
+        justify-content: flex-end;
+    }
+
+    .purchase-header-breadcrumb-col {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .purchase-breadcrumb-nav {
+        width: 100%;
+        justify-content: flex-end !important;
+    }
+
     .purchase-order-card {
         border-radius: 10px;
     }
@@ -232,7 +250,7 @@
         padding: 0.5rem 0.75rem;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: center;
     }
 
     .purchase-vat-box .form-check-input {
@@ -248,7 +266,7 @@
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: flex-end;
+        justify-content: center;
         gap: 10px;
     }
 
@@ -316,6 +334,17 @@
     }
 
     @@media (max-width: 768px) {
+        .purchase-header-row {
+            flex-direction: column;
+            align-items: stretch !important;
+        }
+
+        .purchase-header-title-col .d-flex,
+        .purchase-header-breadcrumb-col,
+        .purchase-breadcrumb-nav {
+            justify-content: flex-end !important;
+        }
+
         .purchase-form-actions {
             flex-direction: column;
             align-items: stretch !important;

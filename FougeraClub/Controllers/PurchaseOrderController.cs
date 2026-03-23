@@ -7,6 +7,7 @@ using FougeraClub.Web.Notifications;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Http;
 using FougeraClub.Web.Otp;
+using System.Linq;
 
 namespace FougeraClub.Web.Controllers
 {
@@ -39,19 +40,39 @@ namespace FougeraClub.Web.Controllers
             return View(orderDtos);
         }
 
-        public async Task<IActionResult> AddEdit(int? id)
+        public async Task<IActionResult> AddEdit(int? id, int? copyFromId)
         {
             ViewBag.Suppliers = await _service.GetSuppliersAsync();
 
-            if (!id.HasValue)
+            if (id.HasValue)
             {
-                var newOrder = await _service.CreateNewOrderDtoAsync();
-                return View(newOrder);
+                var orderDto = await _service.GetOrderDtoByIdAsync(id.Value);
+                if (orderDto == null) return NotFound();
+                return View(orderDto);
             }
 
-            var orderDto = await _service.GetOrderDtoByIdAsync(id.Value);
-            if (orderDto == null) return NotFound();
-            return View(orderDto);
+            var newOrderDto = await _service.CreateNewOrderDtoAsync();
+
+            if (copyFromId.HasValue)
+            {
+                var sourceOrder = await _service.GetOrderDtoByIdAsync(copyFromId.Value);
+                if (sourceOrder == null) return NotFound();
+
+                newOrderDto.SupplierId = sourceOrder.SupplierId;
+                newOrderDto.SupplierName = sourceOrder.SupplierName;
+                newOrderDto.ApplyVat = sourceOrder.ApplyVat;
+                newOrderDto.Remarks = sourceOrder.Remarks;
+                newOrderDto.Items = sourceOrder.Items
+                    .Select(item => new PurchaseOrderItemDto
+                    {
+                        ItemName = item.ItemName,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice
+                    })
+                    .ToList();
+            }
+
+            return View(newOrderDto);
         }
 
         [HttpPost]
