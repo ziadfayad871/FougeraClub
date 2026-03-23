@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Local temporary build verification outputs
+_temp_build*/
+publish-workflow-check/

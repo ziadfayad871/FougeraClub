@@ -10,15 +10,7 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row my-3 d-flex justify-content-between align-items-center flex-wrap purchase-header-row">
-                <div class="col-md-6 mb-2 purchase-header-title-col">
-                    <div class="d-flex align-items-center">
-                        <h4 class="ico-header-title my-1 ms-lg-1 ms-md-1">
-                            <span class="fa fa-book me-2 text-ico"></span>
-                            @pageHeading
-                        </h4>
-                    </div>
-                </div>
-                <div class="col-md-6 mb-2 purchase-header-breadcrumb-col">
+                <div class="col-12 mb-1 purchase-header-breadcrumb-col">
                     <nav class="d-flex align-items-center justify-content-start purchase-breadcrumb-nav" aria-label="breadcrumb">
                         <ol class="breadcrumb mb-0 py-2 flex-nowrap">
                             <li class="breadcrumb-item">
@@ -32,6 +24,14 @@
                             </li>
                         </ol>
                     </nav>
+                </div>
+                <div class="col-12 mb-2 purchase-header-title-col">
+                    <div class="d-flex align-items-center justify-content-start">
+                        <h4 class="ico-header-title my-1 ms-lg-1 ms-md-1">
+                            <span class="fa fa-book me-2 text-ico"></span>
+                            @pageHeading
+                        </h4>
+                    </div>
                 </div>
             </div>
 
@@ -72,11 +72,6 @@
                                     <label class="form-check-label fw-bold" for="vatCheckbox">تطبيق VAT 5%</label>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label fw-bold">الإجمالي النهائي</label>
-                            <input type="text" id="grandTotalDisplay" class="form-control fw-bold bg-light purchase-form-control purchase-readonly text-primary" placeholder="الإجمالي النهائي" readonly value="0.00" />
                         </div>
 
                         <div class="col-12">
@@ -148,6 +143,15 @@
                             </div>
                         </div>
 
+                        <div class="col-12 mt-3">
+                            <div class="purchase-total-row">
+                                <div class="purchase-total-field-wrap">
+                                    <label class="form-label fw-bold">الإجمالي النهائي</label>
+                                    <input type="text" id="grandTotalDisplay" class="form-control fw-bold bg-light purchase-form-control purchase-readonly text-primary" placeholder="الإجمالي النهائي" readonly value="0.00" />
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-md-12">
                             <div class="d-flex align-items-center justify-content-end gap-3 mt-3 purchase-form-actions">
                                 <button type="submit" class="btn btn-sm px-3 btn-cancel-search">
@@ -172,8 +176,8 @@
 
     .purchase-header-row {
         flex-direction: column;
-        align-items: flex-end !important;
-        text-align: right;
+        align-items: flex-start !important;
+        text-align: left;
     }
 
     .purchase-header-title-col,
@@ -181,24 +185,22 @@
         width: 100%;
         max-width: 100%;
         flex: 0 0 100%;
+        display: flex;
+        justify-content: flex-start;
     }
 
     .purchase-header-title-col .d-flex {
-        justify-content: flex-end;
-    }
-
-    .purchase-header-breadcrumb-col {
-        display: flex;
-        justify-content: flex-end;
+        width: 100%;
+        justify-content: flex-start;
     }
 
     .purchase-breadcrumb-nav {
-        width: 100%;
-        justify-content: flex-end !important;
+        width: auto;
+        justify-content: flex-start !important;
     }
 
     .purchase-breadcrumb-nav .breadcrumb {
-        justify-content: flex-end;
+        justify-content: flex-start;
     }
 
     .purchase-order-card {
@@ -325,6 +327,22 @@
         font-size: 14px;
     }
 
+    .purchase-total-row {
+        display: flex;
+        justify-content: flex-start;
+    }
+
+    .purchase-total-field-wrap {
+        width: 100%;
+        max-width: 360px;
+        text-align: left;
+    }
+
+    .purchase-total-field-wrap .form-label {
+        text-align: left;
+        width: 100%;
+    }
+
     .purchase-row-action-btn {
         width: 30px;
         height: 30px;
@@ -355,12 +373,25 @@
         .purchase-header-title-col .d-flex,
         .purchase-header-breadcrumb-col,
         .purchase-breadcrumb-nav {
-            justify-content: flex-end !important;
+            justify-content: flex-start !important;
         }
 
         .purchase-form-actions {
             flex-direction: column;
             align-items: stretch !important;
+        }
+
+        .purchase-total-row {
+            justify-content: stretch;
+        }
+
+        .purchase-total-field-wrap {
+            max-width: 100%;
+            text-align: right;
+        }
+
+        .purchase-total-field-wrap .form-label {
+            text-align: right;
         }
 
         .purchase-form-actions .btn {

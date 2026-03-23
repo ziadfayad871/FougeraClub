@@ -114,18 +114,22 @@
                                             <td class="text-center">@item.OrderDate.ToString("dd-MM-yyyy")</td>
                                             <td class="print-hide">
                                                 <div class="d-flex justify-content-center gap-1 action-controls">
-                                                    <a href="/Admin/PurchaseOrder/AddEdit?copyFromId=@item.Id" class="btn-control btn-icon btn-sm rounded-circle purchase-action-btn purchase-action-add" title="إضافة">
+                                                    <a href="/Admin/PurchaseOrder/AddEdit?copyFromId=@item.Id" class="btn-control btn-icon btn-sm rounded-circle purchase-action-btn purchase-action-add" data-bs-toggle="tooltip" data-bs-placement="top" title="إنشاء أمر جديد">
                                                         <i class="fa-solid fa-plus"></i>
                                                     </a>
                                                     <a
                                                         href="/Admin/PurchaseOrder/AddEdit/@item.Id"
                                                         class="btn-control btn-icon btn-sm rounded-circle purchase-action-btn purchase-action-edit js-open-edit"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
                                                         title="تعديل">
                                                         <i class="fa-solid fa-pen-to-square"></i>
                                                     </a>
                                                     <button
                                                         type="button"
                                                         class="btn-control btn-icon btn-sm rounded-circle purchase-action-btn purchase-action-delete js-open-delete"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
                                                         title="حذف"
                                                         data-id="@item.Id"
                                                         data-order-number="@item.OrderNumber">
@@ -134,6 +138,8 @@
                                                     <a
                                                         href="/Admin/PurchaseOrder/Print/@item.Id"
                                                         class="btn-control btn-icon btn-sm rounded-circle purchase-action-btn purchase-action-print js-open-print"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
                                                         title="طباعة">
                                                         <i class="fa-solid fa-print"></i>
                                                     </a>

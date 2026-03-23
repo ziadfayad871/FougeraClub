@@ -44,6 +44,10 @@
         var currentPage = 1;
         var filteredRows = allRows.slice();
 
+        if (typeof window.initTooltips === 'function') {
+            window.initTooltips();
+        }
+
         function normalizeText(value) {
             return (value || '').trim().toLocaleLowerCase();
         }
