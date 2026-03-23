@@ -29,14 +29,11 @@ namespace FougeraClub.Web.Controllers
             _managerOtpService = managerOtpService;
         }
 
-        public async Task<IActionResult> Index(string supplierName, DateTime? fromDate, DateTime? toDate)
+        public async Task<IActionResult> Index()
         {
-            var orderDtos = await _service.GetOrdersAsync(supplierName, fromDate, toDate);
+            var orderDtos = await _service.GetOrdersAsync(string.Empty, null, null);
             var suppliers = await _service.GetSuppliersAsync();
 
-            ViewBag.SupplierName = supplierName;
-            ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
-            ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
             ViewBag.Suppliers = suppliers;
 
             return View(orderDtos);
@@ -45,7 +42,6 @@ namespace FougeraClub.Web.Controllers
         public async Task<IActionResult> AddEdit(int? id)
         {
             ViewBag.Suppliers = await _service.GetSuppliersAsync();
-            ViewBag.ManagerApprovedName = HttpContext.Session.GetString("ManagerApprovedName");
 
             if (!id.HasValue)
             {
@@ -89,16 +85,11 @@ namespace FougeraClub.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, string? supplierName, DateTime? fromDate, DateTime? toDate)
+        public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
 
-            return RedirectToAction(nameof(Index), new
-            {
-                supplierName,
-                fromDate,
-                toDate
-            });
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -145,4 +136,3 @@ namespace FougeraClub.Web.Controllers
         }
     }
 }
-

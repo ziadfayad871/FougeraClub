@@ -55,7 +55,7 @@ namespace FougeraClub.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("SupplierId");
 
-                    b.ToTable("PurchaseOrders");
+                    b.ToTable("PurchaseOrders", (string)null);
                 });
 
             modelBuilder.Entity("FougeraClub.Domain.Entities.PurchaseOrderItem", b =>
@@ -85,7 +85,7 @@ namespace FougeraClub.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("PurchaseOrderId");
 
-                    b.ToTable("PurchaseOrderItems");
+                    b.ToTable("PurchaseOrderItems", (string)null);
                 });
 
             modelBuilder.Entity("FougeraClub.Domain.Entities.Supplier", b =>
@@ -115,7 +115,7 @@ namespace FougeraClub.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppliers");
+                    b.ToTable("Suppliers", (string)null);
                 });
 
             modelBuilder.Entity("FougeraClub.Domain.Entities.PurchaseOrder", b =>
