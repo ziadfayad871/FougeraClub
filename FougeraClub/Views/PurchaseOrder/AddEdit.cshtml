@@ -171,7 +171,15 @@
     }
 
     .purchase-header-row {
-        flex-direction: row-reverse;
+        flex-direction: column;
+        align-items: flex-end !important;
+    }
+
+    .purchase-header-title-col,
+    .purchase-header-breadcrumb-col {
+        width: 100%;
+        max-width: 100%;
+        flex: 0 0 100%;
     }
 
     .purchase-header-title-col .d-flex {
