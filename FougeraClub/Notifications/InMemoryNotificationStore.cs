@@ -36,13 +36,5 @@ namespace FougeraClub.Web.Notifications
         {
             return _notifications.Count(n => !n.IsRead);
         }
-
-        public void MarkAllAsRead()
-        {
-            foreach (var item in _notifications)
-            {
-                item.IsRead = true;
-            }
-        }
     }
 }

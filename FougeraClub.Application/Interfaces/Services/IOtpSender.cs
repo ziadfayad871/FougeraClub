@@ -1,7 +1,4 @@
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace FougeraClub.Web.Otp
+namespace FougeraClub.Application.Interfaces.Services
 {
     public interface IOtpSender
     {

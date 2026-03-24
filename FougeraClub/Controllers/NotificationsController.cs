@@ -31,15 +31,7 @@ namespace FougeraClub.Web.Controllers
         [HttpGet]
         public IActionResult GetUnreadCount()
         {
-            return Json(_notificationStore.GetUnreadCount());
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult MarkAllRead()
-        {
-            _notificationStore.MarkAllAsRead();
-            return Ok();
+            return Json(new { count = _notificationStore.GetUnreadCount() });
         }
     }
 }

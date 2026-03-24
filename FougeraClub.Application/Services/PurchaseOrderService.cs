@@ -68,7 +68,7 @@ namespace FougeraClub.Application.Services
             {
                 var order = _mapper.Map<PurchaseOrder>(dto);
                 order.Items = _mapper.Map<List<PurchaseOrderItem>>(dto.Items);
-                await _repo.AddOrderAsync(order);
+                await _repo.AddAsync(order);
             }
             else
             {
@@ -79,7 +79,7 @@ namespace FougeraClub.Application.Services
                 }
 
                 var existingItems = order.Items.ToList();
-                await _repo.RemoveOrderItemsAsync(existingItems);
+                _repo.RemoveOrderItems(existingItems);
 
                 _mapper.Map(dto, order);
                 order.Items = _mapper.Map<List<PurchaseOrderItem>>(dto.Items);

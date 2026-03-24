@@ -1,30 +1,18 @@
-
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 
 namespace FougeraClub.Web.Controllers
 {
     public class HomeController : Controller
     {
-  
-       
-
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-
-            return View();
+            return Redirect("/Admin/PurchaseOrder/Index");
         }
 
-        public async Task<IActionResult> AddEdit()
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
         {
-            
             return View();
         }
-
-       
-
-        
     }
 }

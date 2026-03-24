@@ -5,6 +5,5 @@ namespace FougeraClub.Web.Notifications
         void Add(string title, string message);
         IReadOnlyList<NotificationItem> GetUnread(int take = 20);
         int GetUnreadCount();
-        void MarkAllAsRead();
     }
 }

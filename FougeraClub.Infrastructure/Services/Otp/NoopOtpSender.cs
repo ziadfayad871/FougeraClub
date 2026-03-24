@@ -1,8 +1,7 @@
-using System.Threading;
-using System.Threading.Tasks;
+using FougeraClub.Application.Interfaces.Services;
 using Microsoft.Extensions.Logging;
 
-namespace FougeraClub.Web.Otp
+namespace FougeraClub.Infrastructure.Services.Otp
 {
     public class NoopOtpSender : IOtpSender
     {

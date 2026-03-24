@@ -1,4 +1,4 @@
-namespace FougeraClub.Web.Otp
+namespace FougeraClub.Infrastructure.Services.Otp
 {
     public class ManagerOtpOptions
     {

@@ -10,19 +10,19 @@
     <div class="row">
         <div class="col-12">
             <div class="page-title-box">
-                <div class="page-title-right">
-                    <ol class="breadcrumb m-0 print-hide">
+                <div class="page-title-header print-hide">
+                    <ol class="breadcrumb m-0">
                         <li class="breadcrumb-item"><a href="/Admin/Home/Index">نادي الفجيرة العلمي</a></li>
                         <li class="breadcrumb-item active">إدارة أوامر الشراء</li>
                     </ol>
-                </div>
-                <div class="d-flex justify-content-end gap-2 mb-1 print-hide report-toolbar">
-                    <button type="button" class="btn btn-success btn-report-action" id="printAllBtn">
-                        <i class="ri-printer-line me-1"></i> طباعة
-                    </button>
-                    <button type="button" class="btn btn-success btn-report-action" id="exportReportBtn">
-                        <i class="ri-file-excel-2-line me-1"></i> عرض تقرير
-                    </button>
+                    <div class="d-flex justify-content-end gap-2 report-toolbar">
+                        <button type="button" class="btn btn-success btn-report-action" id="printAllBtn">
+                            <i class="ri-printer-line me-1"></i> طباعة
+                        </button>
+                        <button type="button" class="btn btn-success btn-report-action" id="exportReportBtn">
+                            <i class="ri-file-excel-2-line me-1"></i> عرض تقرير
+                        </button>
+                    </div>
                 </div>
                 <h4 class="page-title">إدارة أوامر الشراء</h4>
             </div>
@@ -114,9 +114,6 @@
                                             <td class="text-center">@item.OrderDate.ToString("dd-MM-yyyy")</td>
                                             <td class="print-hide">
                                                 <div class="d-flex justify-content-center gap-1 action-controls">
-                                                    <a href="/Admin/PurchaseOrder/AddEdit?copyFromId=@item.Id" class="btn-control btn-icon btn-sm rounded-circle purchase-action-btn purchase-action-add" data-bs-toggle="tooltip" data-bs-placement="top" title="إنشاء أمر جديد">
-                                                        <i class="fa-solid fa-plus"></i>
-                                                    </a>
                                                     <a
                                                         href="/Admin/PurchaseOrder/AddEdit/@item.Id"
                                                         class="btn-control btn-icon btn-sm rounded-circle purchase-action-btn purchase-action-edit js-open-edit"
@@ -197,7 +194,7 @@
 
     .page-title-box {
         min-height: auto;
-        padding: 8px 0 10px;
+        padding: 4px 0 6px;
     }
 
     #purchaseOrdersPage .card {
@@ -208,17 +205,27 @@
         padding: 0 !important;
     }
 
+    .page-title-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 6px;
+    }
+
     .page-title-box .page-title {
         margin-bottom: 0;
+        line-height: 1.25;
     }
 
     .page-title-box .breadcrumb {
-        margin-bottom: 4px !important;
+        margin-bottom: 0 !important;
     }
 
     .report-toolbar {
         flex-wrap: wrap;
-        gap: 10px !important;
+        gap: 8px !important;
+        margin-bottom: 0 !important;
     }
 
     .purchase-filter-card-body {
@@ -340,6 +347,16 @@
             min-width: 118px;
             height: 32px;
         }
+
+        .page-title-header {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .page-title-header .breadcrumb,
+        .page-title-header .report-toolbar {
+            width: 100%;
+        }
     }
 
     .po-col-number {
@@ -358,14 +375,14 @@
     }
 
     .po-col-actions {
-        width: 20%;
-        min-width: 210px;
+        width: 17%;
+        min-width: 165px;
     }
 
     .purchase-table-topbar {
         display: flex;
         align-items: center;
-        justify-content: flex-start;
+        justify-content: flex-end;
         gap: 10px;
         padding: 10px 14px 8px;
         background: #fff;
@@ -415,7 +432,6 @@
         transform: translateY(-1px);
     }
 
-    .purchase-action-add,
     .purchase-action-print {
         color: #198754;
     }
@@ -428,7 +444,6 @@
         color: #dc3545;
     }
 
-    .purchase-action-add:hover,
     .purchase-action-print:hover {
         background-color: #198754;
         border-color: #198754;
@@ -484,7 +499,7 @@
         }
 
         .purchase-table-page-size {
-            justify-content: center;
+            justify-content: flex-end;
         }
     }
 

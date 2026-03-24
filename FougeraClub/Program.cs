@@ -1,19 +1,15 @@
+using FougeraClub.Application.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using FougeraClub.Application.Interfaces.Repositories;
-using FougeraClub.Application.Interfaces.Services;
-using FougeraClub.Application.Mappings;
-using FougeraClub.Application.Services;
+using FougeraClub.Infrastructure.DependencyInjection;
 using FougeraClub.Infrastructure.Persistence;
-using FougeraClub.Infrastructure.Repositories;
+using FougeraClub.Web.DependencyInjection;
 using FougeraClub.Web.Notifications;
-using FougeraClub.Web.Otp;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
 
 var sqlConnectionString = builder.Configuration.GetConnectionString("default");
 var useSqliteFallback =
@@ -71,14 +67,10 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
 
-builder.Services.AddAutoMapper(cfg => { }, typeof(MappingProfile).Assembly);
-builder.Services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
-builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
-builder.Services.Configure<ManagerOtpOptions>(builder.Configuration.GetSection("ManagerOtp"));
-builder.Services.AddScoped<IManagerOtpService, ManagerOtpService>();
-builder.Services.AddScoped<IOtpSender, NoopOtpSender>();
-builder.Services.AddSignalR();
-builder.Services.AddSingleton<INotificationStore, InMemoryNotificationStore>();
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddInfrastructureRepositories();
+builder.Services.AddWebServices();
 
 var app = builder.Build();
 app.Logger.LogInformation("Using database provider: {DatabaseProvider}", databaseProviderDescription);
@@ -118,5 +110,4 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.MapHub<NotificationsHub>("/hubs/notifications");
-app.MapRazorPages();
 app.Run();

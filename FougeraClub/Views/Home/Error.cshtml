@@ -1,0 +1,63 @@
+@{
+    Layout = null;
+    Context.Response.StatusCode = 500;
+}
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>حدث خطأ</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: #f6f8fb;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .error-card {
+            width: min(480px, 100%);
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0 0 12px;
+            font-size: 28px;
+            color: #14532d;
+        }
+
+        p {
+            margin: 0 0 20px;
+            line-height: 1.8;
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 18px;
+            border-radius: 10px;
+            background: #4caf50;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-card">
+        <h1>حدث خطأ غير متوقع</h1>
+        <p>حصلت مشكلة أثناء تنفيذ الطلب. يمكنك الرجوع إلى صفحة أوامر الشراء والمحاولة مرة أخرى.</p>
+        <a href="/Admin/PurchaseOrder/Index">العودة إلى أوامر الشراء</a>
+    </div>
+</body>
+</html>

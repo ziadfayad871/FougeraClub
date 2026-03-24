@@ -1,169 +1,194 @@
 @model FougeraClub.Application.DTOs.PurchaseOrderDto
 
 @{
-    ViewData["Title"] = Model.Id == 0 ? "إنشاء أمر شراء" : "تعديل أمر شراء";
+    ViewData["Title"] = Model.Id == 0 ? "إضافة أمر شراء" : "تعديل أمر شراء";
     var suppliers = ViewBag.Suppliers as IEnumerable<FougeraClub.Application.DTOs.SupplierLookupDto>;
-    var pageHeading = Model.Id == 0 ? "إنشاء أمر شراء" : "تعديل أمر شراء";
+    var pageHeading = Model.Id == 0 ? "إضافة أمر شراء" : "تعديل أمر شراء";
+    var items = Model.Items ?? new List<FougeraClub.Application.DTOs.PurchaseOrderItemDto>();
+    var itemCount = items.Count;
 }
 
-<div class="content-page purchase-order-editor-page" dir="rtl">
+<div class="content-page purchase-order-editor-page" dir="ltr">
     <div class="content">
         <div class="container-fluid">
-            <div class="row my-3 d-flex justify-content-between align-items-center flex-wrap purchase-header-row">
-                <div class="col-12 mb-1 purchase-header-breadcrumb-col">
-                    <nav class="d-flex align-items-center justify-content-start purchase-breadcrumb-nav" aria-label="breadcrumb">
-                        <ol class="breadcrumb mb-0 py-2 flex-nowrap">
-                            <li class="breadcrumb-item">
-                                <a href="/Admin/Home/Index">أوامر الشراء</a>
-                            </li>
-                            <li class="breadcrumb-item">
-                                <a href="/Admin/PurchaseOrder/Index">قائمة أوامر الشراء</a>
-                            </li>
-                            <li class="breadcrumb-item active" aria-current="page">
-                                @pageHeading
-                            </li>
-                        </ol>
-                    </nav>
-                </div>
-                <div class="col-12 mb-2 purchase-header-title-col">
-                    <div class="d-flex align-items-center justify-content-start">
-                        <h4 class="ico-header-title my-1 ms-lg-1 ms-md-1">
-                            <span class="fa fa-book me-2 text-ico"></span>
+            <div class="purchase-page-header">
+                <nav class="purchase-breadcrumb-nav" aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item active" aria-current="page">
                             @pageHeading
-                        </h4>
-                    </div>
+                        </li>
+                        <li class="purchase-breadcrumb-divider" aria-hidden="true">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="/Admin/PurchaseOrder/Index">قائمة أوامر الشراء</a>
+                        </li>
+                        <li class="purchase-breadcrumb-divider" aria-hidden="true">
+                            <i class="fa-solid fa-chevron-left"></i>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="/Admin/Home/Index">وحدة أوامر الشراء</a>
+                        </li>
+                    </ol>
+                </nav>
+
+                <div class="purchase-page-title-wrap">
+                    <h4 class="ico-header-title my-0">
+                        <span class="fa-solid fa-cart-shopping text-ico"></span>
+                        @pageHeading
+                    </h4>
                 </div>
             </div>
 
-            <div class="card all-borders p-3 purchase-order-card">
-                <form asp-action="AddEdit" method="post" id="purchaseOrderForm">
-                    <input type="hidden" asp-for="Id" />
+            <div class="card all-borders purchase-order-card">
+                <div class="card-body purchase-order-card-body">
+                    <form asp-action="AddEdit" method="post" id="purchaseOrderForm">
+                        <input type="hidden" asp-for="Id" />
 
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">المورد</label>
-                            <select asp-for="SupplierId" class="form-select select2 purchase-form-control" data-placeholder="اختر المورد" required>
-                                <option value="">اختر المورد</option>
-                                @if (suppliers != null)
-                                {
-                                    foreach (var supplier in suppliers)
+                        <div class="row g-4">
+                            <div class="col-lg-6">
+                                <label class="form-label purchase-label-highlight">رقم أمر الشراء</label>
+                                <input asp-for="OrderNumber" class="form-control purchase-form-control purchase-order-number purchase-readonly" readonly />
+                            </div>
+
+                            <div class="col-lg-6">
+                                <label class="form-label required-label">المورد</label>
+                                <select asp-for="SupplierId" class="form-select select2 purchase-form-control" data-placeholder="-- اختر المورد --" required>
+                                    <option value="">-- اختر المورد --</option>
+                                    @if (suppliers != null)
                                     {
-                                        <option value="@supplier.Id">@supplier.Name</option>
+                                        foreach (var supplier in suppliers)
+                                        {
+                                            <option value="@supplier.Id">@supplier.Name</option>
+                                        }
                                     }
-                                }
-                            </select>
-                        </div>
+                                </select>
+                            </div>
 
-                        <div class="col-md-3 mb-2">
-                            <label class="form-label">التاريخ</label>
-                            <input asp-for="OrderDate" type="date" class="form-control purchase-form-control" placeholder="اختر التاريخ" required value="@Model.OrderDate.ToString("yyyy-MM-dd")" />
-                        </div>
-
-                        <div class="col-md-3 mb-2">
-                            <label class="form-label">رقم أمر الشراء</label>
-                            <input asp-for="OrderNumber" class="form-control fw-bold bg-light purchase-form-control purchase-readonly text-primary" placeholder="رقم أمر الشراء" readonly />
-                        </div>
-
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">الضريبة</label>
-                            <div class="purchase-vat-box">
-                                <div class="form-check form-switch m-0 purchase-vat-switch">
-                                    <input asp-for="ApplyVat" class="form-check-input" type="checkbox" id="vatCheckbox">
-                                    <label class="form-check-label fw-bold" for="vatCheckbox">تطبيق VAT 5%</label>
+                            <div class="col-lg-6">
+                                <label class="form-label purchase-label-muted">الضريبة</label>
+                                <div class="purchase-vat-box purchase-vat-box-inline">
+                                    <div class="form-check form-switch m-0 purchase-vat-switch">
+                                        <input asp-for="ApplyVat" class="form-check-input" type="checkbox" id="vatCheckbox">
+                                        <label class="form-check-label fw-bold" for="vatCheckbox">With 5% VAT</label>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="col-12">
-                            <div class="purchase-divider"></div>
-                        </div>
-
-                        <div class="col-md-3 mb-2">
-                            <label class="form-label">الكمية</label>
-                            <input type="number" id="entryQty" class="form-control purchase-form-control" step="0.01" placeholder="أدخل الكمية" />
-                        </div>
-
-                        <div class="col-md-3 mb-2">
-                            <label class="form-label">سعر الوحدة</label>
-                            <input type="number" id="entryPrice" class="form-control purchase-form-control" step="0.01" placeholder="أدخل سعر الوحدة" />
-                        </div>
-
-                        <div class="col-md-6 mb-2">
-                            <label class="form-label">البيان</label>
-                            <textarea id="entryStatement" class="form-control purchase-form-control purchase-statement" rows="2" placeholder="أدخل البيان أو الوصف"></textarea>
-                        </div>
-
-                        <div class="col-12">
-                            <div class="d-flex justify-content-end mt-2">
-                                <button type="button" class="btn btn-success btn-sm px-3 purchase-save-item-btn" onclick="addItemToList()">
-                                    <i class="fa-solid fa-plus me-1"></i> حفظ البند
-                                </button>
+                            <div class="col-lg-6">
+                                <label class="form-label required-label">التاريخ</label>
+                                <div class="purchase-date-wrap">
+                                    <input asp-for="OrderDate" type="date" class="form-control purchase-form-control purchase-date-input" required value="@Model.OrderDate.ToString("yyyy-MM-dd")" />
+                                    <span class="purchase-date-icon">
+                                        <i class="fa-regular fa-calendar-days"></i>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-12 mt-3">
-                            <div class="table-responsive purchase-items-table-wrap">
-                                <table class="table table-bordered table-hover table-striped mb-0 text-center purchase-items-table" id="itemsTable">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 15%;">الكمية</th>
-                                            <th style="width: 15%;">سعر الوحدة</th>
-                                            <th style="width: 55%;" class="text-start">البيان</th>
-                                            <th style="width: 15%;">أدوات التحكم</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="itemsBody">
-                                        @if (Model.Items != null && Model.Items.Count > 0)
-                                        {
-                                            for (int i = 0; i < Model.Items.Count; i++)
+                            <div class="col-12">
+                                <div class="purchase-section-title">إضافة بنود أمر الشراء</div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <label class="form-label required-label">سعر الوحدة</label>
+                                <input type="number" id="entryPrice" class="form-control purchase-form-control" step="0.01" placeholder="أدخل سعر الوحدة" />
+                            </div>
+
+                            <div class="col-lg-6">
+                                <label class="form-label required-label">الكمية</label>
+                                <input type="number" id="entryQty" class="form-control purchase-form-control" step="0.01" placeholder="أدخل الكمية" />
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label required-label">البيان</label>
+                                <textarea id="entryStatement" class="form-control purchase-form-control purchase-statement" rows="2" placeholder="أدخل البيان"></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="purchase-item-action-row">
+                                    <button type="button" class="btn btn-success purchase-add-item-btn" onclick="addItemToList()">
+                                        إضافة
+                                        <i class="fa-solid fa-cart-plus ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="purchase-section-title">بنود أمر الشراء</div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="table-responsive purchase-items-table-wrap">
+                                    <table class="table table-bordered align-middle text-center mb-0 purchase-items-table" id="itemsTable">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 20%;">الكمية</th>
+                                                <th style="width: 28%;">سعر الوحدة</th>
+                                                <th style="width: 32%;">البيان</th>
+                                                <th style="width: 20%;">أدوات التحكم</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="itemsBody">
+                                            @if (itemCount > 0)
                                             {
-                                                <tr>
-                                                    <td class="fw-bold text-dark">
-                                                        <input type="hidden" name="Items[@i].Quantity" value="@Model.Items[i].Quantity" />
-                                                        @Model.Items[i].Quantity
-                                                    </td>
-                                                    <td class="text-muted">
-                                                        <input type="hidden" name="Items[@i].UnitPrice" value="@Model.Items[i].UnitPrice" />
-                                                        @Model.Items[i].UnitPrice.ToString("N2")
-                                                    </td>
-                                                    <td class="text-start text-dark fw-medium">
-                                                        <input type="hidden" name="Items[@i].ItemName" value="@Model.Items[i].ItemName" />
-                                                        @Model.Items[i].ItemName
-                                                    </td>
-                                                    <td>
-                                                        <button type="button" class="btn-control btn-icon btn-sm rounded-circle purchase-row-action-btn" onclick="removeRow(this)">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </td>
+                                                for (int i = 0; i < itemCount; i++)
+                                                {
+                                                    <tr class="item-row">
+                                                        <td class="fw-bold text-dark">
+                                                            <input type="hidden" name="Items[@i].Quantity" value="@items[i].Quantity" />
+                                                            @items[i].Quantity
+                                                        </td>
+                                                        <td class="text-dark">
+                                                            <input type="hidden" name="Items[@i].UnitPrice" value="@items[i].UnitPrice" />
+                                                            @items[i].UnitPrice.ToString("N2")
+                                                        </td>
+                                                        <td class="text-dark fw-medium purchase-item-name-cell">
+                                                            <input type="hidden" name="Items[@i].ItemName" value="@items[i].ItemName" />
+                                                            @items[i].ItemName
+                                                        </td>
+                                                        <td>
+                                                            <button type="button" class="btn-control btn-icon btn-sm rounded-circle purchase-row-action-btn" onclick="removeRow(this)">
+                                                                <i class="fa-solid fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr id="itemsEmptyState">
+                                                    <td colspan="4" class="purchase-empty-state">لا توجد بنود مضافة حالياً</td>
                                                 </tr>
                                             }
-                                        }
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-12 mt-3">
-                            <div class="purchase-total-row">
-                                <div class="purchase-total-field-wrap">
-                                    <label class="form-label fw-bold">الإجمالي النهائي</label>
-                                    <input type="text" id="grandTotalDisplay" class="form-control fw-bold bg-light purchase-form-control purchase-readonly text-primary" placeholder="الإجمالي النهائي" readonly value="0.00" />
+                            <div class="col-12">
+                                <div class="purchase-total-row">
+                                    <div class="purchase-total-field-wrap">
+                                        <label class="form-label fw-bold">الإجمالي النهائي</label>
+                                        <input type="text" id="grandTotalDisplay" class="form-control purchase-form-control purchase-readonly purchase-total-display" readonly value="0.00" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="purchase-form-actions">
+                                    <button type="submit" class="btn btn-success purchase-submit-btn">
+                                        حفظ
+                                        <i class="fa-solid fa-floppy-disk ms-2"></i>
+                                    </button>
+                                    <a class="btn purchase-back-btn" href="/Admin/PurchaseOrder/Index">
+                                        رجوع
+                                        <i class="fa-solid fa-arrow-left ms-2"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-md-12">
-                            <div class="d-flex align-items-center justify-content-end gap-3 mt-3 purchase-form-actions">
-                                <button type="submit" class="btn btn-sm px-3 btn-cancel-search">
-                                    <i class="fa-solid fa-floppy-disk me-1"></i> حفظ أمر الشراء
-                                </button>
-                                <a class="btn btn-success btn-sm px-3" href="/Admin/PurchaseOrder/Index">
-                                    رجوع <i class="fa-solid fa-arrow-left"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -174,57 +199,133 @@
         max-width: calc(100% - 24px);
     }
 
-    .purchase-header-row {
-        flex-direction: column;
-        align-items: flex-start !important;
-        text-align: left;
-    }
-
-    .purchase-header-title-col,
-    .purchase-header-breadcrumb-col {
-        width: 100%;
-        max-width: 100%;
-        flex: 0 0 100%;
+    .purchase-page-header {
         display: flex;
-        justify-content: flex-start;
-    }
-
-    .purchase-header-title-col .d-flex {
-        width: 100%;
-        justify-content: flex-start;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin: 12px 0 16px;
     }
 
     .purchase-breadcrumb-nav {
-        width: auto;
-        justify-content: flex-start !important;
+        width: 100%;
+        direction: rtl;
     }
 
     .purchase-breadcrumb-nav .breadcrumb {
+        display: flex;
+        align-items: center;
         justify-content: flex-start;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+    }
+
+    .purchase-breadcrumb-nav .breadcrumb-item {
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+    }
+
+    .purchase-breadcrumb-nav .breadcrumb-item + .breadcrumb-item::before {
+        display: none;
+    }
+
+    .purchase-breadcrumb-nav .breadcrumb-item a,
+    .purchase-breadcrumb-nav .breadcrumb-item.active {
+        color: #64748b;
+        text-decoration: none;
+    }
+
+    .purchase-breadcrumb-nav .breadcrumb-item.active {
+        color: #94a3b8;
+    }
+
+    .purchase-breadcrumb-divider {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-size: 11px;
+    }
+
+    .purchase-page-title-wrap {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .purchase-page-title-wrap .ico-header-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1.65rem;
+        text-align: right;
+        direction: rtl;
+        border-right: 0;
+        padding-right: 0;
+    }
+
+    .purchase-page-title-wrap .ico-header-title::before {
+        display: none;
+    }
+
+    .purchase-page-title-wrap .ico-header-title::after {
+        display: none;
     }
 
     .purchase-order-card {
-        border-radius: 10px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+    }
+
+    .purchase-order-card-body {
+        padding: 1.85rem 1.95rem;
     }
 
     .purchase-order-card .form-label {
-        color: #334155;
-        font-weight: 600;
-        margin-bottom: 0.35rem;
+        color: #4aa84d;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        display: block;
+        width: 100%;
+        text-align: right;
+    }
+
+    .purchase-label-highlight {
+        color: #6ab54f !important;
+    }
+
+    .purchase-label-muted {
+        color: #7bb05c !important;
+    }
+
+    .required-label::after {
+        content: " *";
+        color: #dc3545;
     }
 
     .purchase-form-control,
     .purchase-order-editor-page .select2-container--default .select2-selection--single {
-        min-height: 38px;
-        border: 1px solid #d5dbe3 !important;
-        border-radius: 0.375rem !important;
-        font-size: 14px;
+        min-height: 40px;
+        border: 1px solid #d7dde5 !important;
+        border-radius: 0.45rem !important;
+        font-size: 15px;
         text-align: right;
+        direction: rtl;
+        background-color: #fff;
+    }
+
+    .purchase-order-editor-page .purchase-form-control::placeholder,
+    .purchase-order-editor-page textarea::placeholder,
+    .purchase-order-editor-page input::placeholder {
+        text-align: right;
+        direction: rtl;
     }
 
     .purchase-order-editor-page .form-control:focus,
     .purchase-order-editor-page .form-select:focus {
-        border-color: #86c67c;
+        border-color: #85c870;
         box-shadow: none;
     }
 
@@ -235,112 +336,191 @@
     .purchase-order-editor-page .select2-container--default .select2-selection--single {
         display: flex;
         align-items: center;
-        background-color: #fff;
     }
 
     .purchase-order-editor-page .select2-container--default .select2-selection--single .select2-selection__rendered {
-        width: 100%;
-        line-height: 36px;
-        padding-right: 12px;
-        padding-left: 28px;
+        line-height: 38px;
+        padding-right: 32px;
+        padding-left: 14px;
+        color: #5b6572;
         text-align: right;
-        color: #334155;
-        font-size: 14px;
+        direction: rtl;
+    }
+
+    .purchase-order-editor-page .select2-container--default .select2-selection--single .select2-selection__placeholder {
+        text-align: right;
+        direction: rtl;
     }
 
     .purchase-order-editor-page .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 36px;
+        height: 38px;
+    }
+
+    .purchase-order-number {
+        font-weight: 700;
+        color: #5b6572;
+        background-color: #fafbfd !important;
     }
 
     .purchase-readonly {
-        background-color: #f8f9fa !important;
-        border-color: #e2e8f0 !important;
+        background-color: #fafbfd !important;
+        border-color: #e1e6ec !important;
+    }
+
+    .purchase-date-wrap {
+        position: relative;
+    }
+
+    .purchase-date-input {
+        padding-right: 42px;
+        padding-left: 0.75rem;
+        text-align: right;
+    }
+
+    .purchase-date-icon {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #727c87;
+        pointer-events: none;
     }
 
     .purchase-vat-box {
-        min-height: 38px;
-        border: 1px solid #d5dbe3;
-        border-radius: 0.375rem;
+        min-height: 40px;
+        border: 1px solid #d7dde5;
+        border-radius: 0.45rem;
         background: #fff;
-        padding: 0.5rem 0.75rem;
+        padding: 0.5rem 0.85rem;
         display: flex;
         align-items: center;
-        justify-content: center;
     }
 
-    .purchase-vat-box .form-check-input {
-        width: 40px;
-        height: 20px;
-        float: none;
-        margin-left: 0.5rem;
-        margin-right: 0;
-        cursor: pointer;
+    .purchase-vat-box-inline {
+        justify-content: flex-end;
     }
 
     .purchase-vat-switch {
         width: 100%;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: space-between;
         gap: 10px;
     }
 
-    .purchase-vat-switch .form-check-label {
-        color: #334155;
+    .purchase-vat-box .form-check-input {
+        width: 42px;
+        height: 22px;
+        float: none;
+        margin: 0;
+        cursor: pointer;
     }
 
-    .purchase-divider {
-        height: 1px;
-        background: #e5e7eb;
-        margin: 0.75rem 0 0.5rem;
+    .purchase-vat-switch .form-check-label {
+        color: #77b85a;
+        font-size: 15px;
+        text-align: right;
+    }
+
+    .purchase-section-title {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: flex-start;
+        gap: 8px;
+        color: #6ab54f;
+        font-size: 1.3rem;
+        font-weight: 700;
+        width: 100%;
+        margin-top: 0.25rem;
+        text-align: right;
+    }
+
+    .purchase-section-title::after {
+        content: "";
+        width: 34px;
+        height: 4px;
+        border-radius: 999px;
+        background: #9dd67f;
     }
 
     .purchase-statement {
-        min-height: 38px;
+        min-height: 46px;
         resize: vertical;
     }
 
-    .purchase-save-item-btn {
-        min-width: 120px;
+    .purchase-item-action-row {
+        display: flex;
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .purchase-add-item-btn {
+        min-width: 144px;
+        height: 42px;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .purchase-items-table-wrap {
-        border: 1px solid #d9e1e8;
-        border-radius: 0.5rem;
+        border-radius: 0.75rem;
         overflow: hidden;
+        border: 1px solid #d8e0e8;
         background: #fff;
     }
 
     .purchase-items-table {
         margin-bottom: 0;
+        direction: rtl;
     }
 
     .purchase-items-table thead th {
-        background: #eef3f8;
-        color: #475569;
+        background: #46ab43;
+        color: #fff;
         font-weight: 700;
         white-space: nowrap;
+        padding: 0.9rem 0.75rem;
+        border-color: rgba(255, 255, 255, 0.25);
     }
 
     .purchase-items-table td {
         vertical-align: middle;
         font-size: 14px;
+        padding: 0.9rem 0.75rem;
+    }
+
+    .purchase-item-name-cell {
+        text-align: center;
+    }
+
+    .purchase-empty-state {
+        color: #94a3b8;
+        font-weight: 600;
+        padding: 1.25rem 0.75rem !important;
     }
 
     .purchase-total-row {
         display: flex;
-        justify-content: flex-start;
+        justify-content: flex-end;
     }
 
     .purchase-total-field-wrap {
         width: 100%;
-        max-width: 360px;
-        text-align: left;
+        max-width: 340px;
+        text-align: right;
     }
 
     .purchase-total-field-wrap .form-label {
-        text-align: left;
+        text-align: right;
         width: 100%;
+    }
+
+    .purchase-total-display {
+        font-weight: 800;
+        color: #009ec7;
     }
 
     .purchase-row-action-btn {
@@ -352,6 +532,8 @@
         justify-content: center;
         font-size: 13px;
         color: #dc3545;
+        border: 1px solid #e2e8f0;
+        background: #fff;
     }
 
     .purchase-row-action-btn:hover {
@@ -360,25 +542,71 @@
         color: #fff;
     }
 
-    .purchase-form-actions .btn {
-        min-width: 126px;
+    .purchase-form-actions {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 12px;
+        width: 100%;
+    }
+
+    .purchase-submit-btn,
+    .purchase-back-btn {
+        min-width: 86px;
+        height: 42px;
+        border-radius: 0.5rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+    }
+
+    .purchase-back-btn {
+        background: #9fd971;
+        border: 1px solid #9fd971;
+        color: #fff;
+    }
+
+    .purchase-back-btn:hover {
+        background: #8bc85f;
+        border-color: #8bc85f;
+        color: #fff;
+    }
+
+    @@media (max-width: 992px) {
+        .purchase-order-card-body {
+            padding: 1.25rem;
+        }
+
+        .purchase-page-title-wrap {
+            justify-content: flex-end;
+        }
+
+        .purchase-breadcrumb-nav .breadcrumb {
+            justify-content: flex-start;
+        }
     }
 
     @@media (max-width: 768px) {
-        .purchase-header-row {
-            flex-direction: column;
-            align-items: stretch !important;
+        .purchase-page-header {
+            align-items: stretch;
         }
 
-        .purchase-header-title-col .d-flex,
-        .purchase-header-breadcrumb-col,
-        .purchase-breadcrumb-nav {
-            justify-content: flex-start !important;
+        .purchase-order-card-body {
+            padding: 1rem;
         }
 
         .purchase-form-actions {
-            flex-direction: column;
-            align-items: stretch !important;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .purchase-submit-btn,
+        .purchase-back-btn,
+        .purchase-add-item-btn {
+            width: auto;
         }
 
         .purchase-total-row {
@@ -394,8 +622,8 @@
             text-align: right;
         }
 
-        .purchase-form-actions .btn {
-            width: 100%;
+        .purchase-vat-box-inline {
+            justify-content: center;
         }
     }
 </style>
@@ -416,7 +644,11 @@
             }
 
             updateGrandTotal();
-            $('#vatCheckbox').change(function () { updateGrandTotal(); });
+            toggleItemsEmptyState();
+
+            $('#vatCheckbox').change(function () {
+                updateGrandTotal();
+            });
         });
 
         function addItemToList() {
@@ -425,7 +657,7 @@
             var statement = $('#entryStatement').val().trim();
 
             if (statement === "") {
-                toastr.error("يجب إدخال البيان (الوصف)");
+                toastr.error("يجب إدخال البيان");
                 return;
             }
 
@@ -434,18 +666,23 @@
                 return;
             }
 
-            var index = $('#itemsBody tr').length;
+            if (price <= 0) {
+                toastr.error("سعر الوحدة يجب أن يكون أكبر من صفر");
+                return;
+            }
+
+            var index = $('#itemsBody tr.item-row').length;
             var newRow = `
-                <tr>
+                <tr class="item-row">
                     <td class="fw-bold text-dark">
                         <input type="hidden" name="Items[${index}].Quantity" value="${qty}" />
                         ${qty}
                     </td>
-                    <td class="text-muted">
+                    <td class="text-dark">
                         <input type="hidden" name="Items[${index}].UnitPrice" value="${price}" />
-                        ${price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                        ${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
-                    <td class="text-start text-dark fw-medium">
+                    <td class="text-dark fw-medium purchase-item-name-cell">
                         <input type="hidden" name="Items[${index}].ItemName" value="${statement}" />
                         ${statement}
                     </td>
@@ -459,38 +696,77 @@
             $('#itemsBody').append(newRow);
             $('#entryQty').val('');
             $('#entryPrice').val('');
-            $('#entryStatement').val("");
+            $('#entryStatement').val('');
 
             reIndexRows();
+            toggleItemsEmptyState();
             updateGrandTotal();
             toastr.info("تمت إضافة البند إلى القائمة");
         }
 
+        function confirmRemoveRow() {
+            if (window.Swal && Swal.fire) {
+                return Swal.fire({
+                    title: 'هل أنت متأكد من حذف هذا البند؟',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'نعم، احذف',
+                    cancelButtonText: 'إلغاء',
+                    confirmButtonColor: '#47a744',
+                    reverseButtons: true,
+                    focusCancel: true
+                }).then(function (result) {
+                    return !!result.isConfirmed;
+                });
+            }
+
+            return Promise.resolve(window.confirm('هل أنت متأكد من حذف هذا البند؟'));
+        }
+
         function removeRow(btn) {
-            $(btn).closest('tr').remove();
-            reIndexRows();
-            updateGrandTotal();
+            confirmRemoveRow().then(function (ok) {
+                if (!ok) {
+                    return;
+                }
+
+                $(btn).closest('tr').remove();
+                reIndexRows();
+                toggleItemsEmptyState();
+                updateGrandTotal();
+            });
         }
 
         function reIndexRows() {
-            $('#itemsBody tr').each(function (index, row) {
+            $('#itemsBody tr.item-row').each(function (index, row) {
                 $(row).find('input').each(function () {
                     var name = $(this).attr('name');
                     if (name) {
-                        var newName = name.replace(/\[\d+\]/, '[' + index + ']');
-                        $(this).attr('name', newName);
+                        $(this).attr('name', name.replace(/\[\d+\]/, '[' + index + ']'));
                     }
                 });
             });
         }
 
+        function toggleItemsEmptyState() {
+            var itemRows = $('#itemsBody tr.item-row');
+            var emptyState = $('#itemsEmptyState');
+
+            if (itemRows.length === 0) {
+                if (emptyState.length === 0) {
+                    $('#itemsBody').append('<tr id="itemsEmptyState"><td colspan="4" class="purchase-empty-state">لا توجد بنود مضافة حالياً</td></tr>');
+                }
+            } else {
+                emptyState.remove();
+            }
+        }
+
         function updateGrandTotal() {
             var total = 0;
 
-            $('#itemsBody tr').each(function () {
+            $('#itemsBody tr.item-row').each(function () {
                 var qty = parseFloat($(this).find('input[name*="Quantity"]').val()) || 0;
                 var price = parseFloat($(this).find('input[name*="UnitPrice"]').val()) || 0;
-                total += (qty * price);
+                total += qty * price;
             });
 
             var applyVat = $('#vatCheckbox').is(':checked');

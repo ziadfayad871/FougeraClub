@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FougeraClub.Infrastructure.Repositories
 {
-    public class PurchaseOrderRepository : IPurchaseOrderRepository
+    public class PurchaseOrderRepository : GenericRepository<PurchaseOrder>, IPurchaseOrderRepository
     {
         private readonly ApplicationDbContext _db;
 
-        public PurchaseOrderRepository(ApplicationDbContext db)
+        public PurchaseOrderRepository(ApplicationDbContext db) : base(db)
         {
             _db = db;
         }
@@ -43,12 +43,12 @@ namespace FougeraClub.Infrastructure.Repositories
 
         public async Task<PurchaseOrder?> GetLastOrderAsync()
         {
-            return await _db.PurchaseOrders.OrderByDescending(p => p.Id).FirstOrDefaultAsync();
+            return await DbSet.OrderByDescending(p => p.Id).FirstOrDefaultAsync();
         }
 
         public async Task<PurchaseOrder?> GetByIdWithItemsAsync(int id)
         {
-            return await _db.PurchaseOrders
+            return await DbSet
                 .Include(p => p.Items)
                 .Include(p => p.Supplier)
                 .FirstOrDefaultAsync(p => p.Id == id);
@@ -59,14 +59,9 @@ namespace FougeraClub.Infrastructure.Repositories
             return await _db.Suppliers.OrderBy(s => s.Name).ToListAsync();
         }
 
-        public async Task AddOrderAsync(PurchaseOrder order)
-        {
-            await _db.PurchaseOrders.AddAsync(order);
-        }
-
         public async Task<bool> DeleteOrderAsync(int id)
         {
-            var order = await _db.PurchaseOrders
+            var order = await DbSet
                 .Include(p => p.Items)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
@@ -77,23 +72,17 @@ namespace FougeraClub.Infrastructure.Repositories
 
             if (order.Items.Count != 0)
             {
-                _db.PurchaseOrderItems.RemoveRange(order.Items);
+                RemoveOrderItems(order.Items);
             }
 
-            _db.PurchaseOrders.Remove(order);
-            await _db.SaveChangesAsync();
+            Remove(order);
+            await SaveChangesAsync();
             return true;
         }
 
-        public Task RemoveOrderItemsAsync(IEnumerable<PurchaseOrderItem> items)
+        public void RemoveOrderItems(IEnumerable<PurchaseOrderItem> items)
         {
             _db.PurchaseOrderItems.RemoveRange(items);
-            return Task.CompletedTask;
-        }
-
-        public async Task SaveChangesAsync()
-        {
-            await _db.SaveChangesAsync();
         }
     }
 }

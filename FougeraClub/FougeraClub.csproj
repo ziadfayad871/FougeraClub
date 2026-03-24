@@ -14,21 +14,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="16.1.1" />
-    <PackageReference Include="ClosedXML" Version="0.105.0" />
-    <PackageReference Include="CsvHelper" Version="33.1.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" />
-    <PackageReference Include="Microsoft.Extensions.ML" Version="1.5.5" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.1" />
-    <PackageReference Include="Microsoft.ML" Version="3.0.1" />
-    <PackageReference Include="Microsoft.ML.Vision" Version="3.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.3.1" />
   </ItemGroup>
   <ItemGroup>
     <None Update="tessdata\ara.traineddata">
@@ -43,7 +31,6 @@
     <ProjectReference Include="..\FougeraClub.Application\FougeraClub.Application.csproj" />
     <ProjectReference Include="..\FougeraClub.Infrastructure\FougeraClub.Infrastructure.csproj" />
   </ItemGroup>
-  <!-- IDClassificationMLModel removed for starter repository (file not present) -->
   <ItemGroup>
     <Folder Include="wwwroot\bootstrap\" />
   </ItemGroup>

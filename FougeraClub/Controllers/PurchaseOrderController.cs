@@ -6,7 +6,6 @@ using FougeraClub.Application.Interfaces.Services;
 using FougeraClub.Web.Notifications;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Http;
-using FougeraClub.Web.Otp;
 using System.Linq;
 
 namespace FougeraClub.Web.Controllers

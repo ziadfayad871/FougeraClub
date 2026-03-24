@@ -1,18 +1,48 @@
 (function () {
     'use strict';
 
-    window.validateDates = function () {
+    window.validateDates = function (showFeedback) {
         var fromDateInput = document.getElementById('fromDateFilter');
         var toDateInput = document.getElementById('toDateFilter');
         var fromDate = fromDateInput ? fromDateInput.value : '';
         var toDate = toDateInput ? toDateInput.value : '';
+        var message = 'يجب أن يكون تاريخ "من" أقل من أو يساوي تاريخ "إلى".';
+
+        if (fromDateInput) {
+            fromDateInput.max = toDate || '';
+            fromDateInput.setCustomValidity('');
+            fromDateInput.classList.remove('is-invalid');
+        }
+
+        if (toDateInput) {
+            toDateInput.min = fromDate || '';
+            toDateInput.setCustomValidity('');
+            toDateInput.classList.remove('is-invalid');
+        }
 
         if (fromDate && toDate && fromDate > toDate) {
-            if (window.toastr) {
-                window.toastr.error('عذرًا، يجب أن يكون تاريخ "من" أقل من أو يساوي تاريخ "إلى"', 'خطأ في التاريخ');
-            } else {
-                window.alert('عذرًا، يجب أن يكون تاريخ "من" أقل من أو يساوي تاريخ "إلى"');
+            if (fromDateInput) {
+                fromDateInput.setCustomValidity(message);
+                fromDateInput.classList.add('is-invalid');
             }
+
+            if (toDateInput) {
+                toDateInput.setCustomValidity(message);
+                toDateInput.classList.add('is-invalid');
+            }
+
+            if (showFeedback !== false) {
+                if (toDateInput && typeof toDateInput.reportValidity === 'function') {
+                    toDateInput.reportValidity();
+                } else if (fromDateInput && typeof fromDateInput.reportValidity === 'function') {
+                    fromDateInput.reportValidity();
+                } else if (window.toastr) {
+                    window.toastr.error(message, 'خطأ في التاريخ');
+                } else {
+                    window.alert(message);
+                }
+            }
+
             return false;
         }
 
@@ -167,8 +197,8 @@
             return clonedTable;
         }
 
-        function applyFilters(resetPage) {
-            if (!window.validateDates()) {
+        function applyFilters(resetPage, showFeedback) {
+            if (!window.validateDates(showFeedback !== false)) {
                 return;
             }
 
@@ -185,7 +215,7 @@
         if (filterForm) {
             filterForm.addEventListener('submit', function (event) {
                 event.preventDefault();
-                applyFilters(true);
+                applyFilters(true, true);
             });
         }
 
@@ -195,7 +225,7 @@
             }
 
             control.addEventListener('change', function () {
-                applyFilters(true);
+                applyFilters(true, true);
             });
         });
 
@@ -213,7 +243,8 @@
                     toDateFilter.value = '';
                 }
 
-                applyFilters(true);
+                window.validateDates(false);
+                applyFilters(true, false);
             });
         }
 
@@ -320,7 +351,8 @@
             });
         }
 
-        applyFilters(true);
+        window.validateDates(false);
+        applyFilters(true, false);
     }
 
     if (document.readyState === 'loading') {

@@ -1,11 +1,9 @@
-using System;
 using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
+using FougeraClub.Application.Interfaces.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 
-namespace FougeraClub.Web.Otp
+namespace FougeraClub.Infrastructure.Services.Otp
 {
     public class ManagerOtpService : IManagerOtpService
     {
@@ -43,8 +41,8 @@ namespace FougeraClub.Web.Otp
                 Success = true,
                 DeliveryEnabled = deliveryEnabled,
                 Message = deliveryEnabled
-                    ? "تم إرسال OTP إلى المدير."
-                    : "تم تجهيز OTP (وضع تجريبي بدون إرسال).",
+                    ? "طھظ… ط¥ط±ط³ط§ظ„ OTP ط¥ظ„ظ‰ ط§ظ„ظ…ط¯ظٹط±."
+                    : "طھظ… طھط¬ظ‡ظٹط² OTP (ظˆط¶ط¹ طھط¬ط±ظٹط¨ظٹ ط¨ط¯ظˆظ† ط¥ط±ط³ط§ظ„).",
                 ExpiresAtUtcIso = expiresAtUtc.ToString("O")
             };
         }
@@ -54,25 +52,25 @@ namespace FougeraClub.Web.Otp
             var inputOtp = (otp ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(inputOtp))
             {
-                return Task.FromResult(new OtpVerifyResult { Success = false, Message = "ادخل OTP" });
+                return Task.FromResult(new OtpVerifyResult { Success = false, Message = "ط§ط¯ط®ظ„ OTP" });
             }
 
             var sessionOtp = httpContext.Session.GetString(SessionOtpCode);
             var sessionExpiry = httpContext.Session.GetString(SessionOtpExpiresAt);
             if (string.IsNullOrWhiteSpace(sessionOtp) || string.IsNullOrWhiteSpace(sessionExpiry))
             {
-                return Task.FromResult(new OtpVerifyResult { Success = false, Message = "اطلب OTP أولاً" });
+                return Task.FromResult(new OtpVerifyResult { Success = false, Message = "ط§ط·ظ„ط¨ OTP ط£ظˆظ„ط§ظ‹" });
             }
 
             if (!DateTime.TryParse(sessionExpiry, out var expiresAtUtc) || DateTime.UtcNow > expiresAtUtc)
             {
                 ClearOtpSession(httpContext);
-                return Task.FromResult(new OtpVerifyResult { Success = false, Message = "OTP انتهت صلاحيته" });
+                return Task.FromResult(new OtpVerifyResult { Success = false, Message = "OTP ط§ظ†طھظ‡طھ طµظ„ط§ط­ظٹطھظ‡" });
             }
 
             if (!string.Equals(inputOtp, sessionOtp, StringComparison.Ordinal))
             {
-                return Task.FromResult(new OtpVerifyResult { Success = false, Message = "OTP غير صحيح" });
+                return Task.FromResult(new OtpVerifyResult { Success = false, Message = "OTP ط؛ظٹط± طµط­ظٹط­" });
             }
 
             var managerName = string.IsNullOrWhiteSpace(_options.Value.ManagerName) ? "ziad" : _options.Value.ManagerName.Trim();
@@ -82,7 +80,7 @@ namespace FougeraClub.Web.Otp
             return Task.FromResult(new OtpVerifyResult
             {
                 Success = true,
-                Message = "تم التحقق بنجاح",
+                Message = "طھظ… ط§ظ„طھط­ظ‚ظ‚ ط¨ظ†ط¬ط§ط­",
                 ManagerName = managerName
             });
         }

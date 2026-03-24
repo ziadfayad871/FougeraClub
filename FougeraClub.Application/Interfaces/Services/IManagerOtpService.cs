@@ -1,8 +1,6 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
-namespace FougeraClub.Web.Otp
+namespace FougeraClub.Application.Interfaces.Services
 {
     public interface IManagerOtpService
     {
